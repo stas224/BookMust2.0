@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Details</h1>
+    <table>
+        <tr>
+            <th>Book Name</th>
+            <th>Genre</th>
+            <th>Author</th>
+            <th>Publisher</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result.book_name }}</td>
+            <td>{{ result.genre_name }}</td>
+            <td>{{ result.author_name }} {{ result.author_last_name }}</td>
+            <td>{{ result.publisher_name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
