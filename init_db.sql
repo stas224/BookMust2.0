@@ -1,18 +1,19 @@
 create table country(
     id serial primary key,
     full_name varchar(32),
-    short_name varchar(8)
+    short_name varchar(8),
+    flag_url varchar(64)
 );
-insert into country (full_name, short_name)
+insert into country (full_name, short_name, flag_url)
 values
-    ('Russia', 'RU'),
-    ('United States of America', 'USA'),
-    ('France', 'FR'),
-    ('Germany', 'DE'),
-    ('Australia', 'AU'),
-    ('China', 'CN'),
-    ('Canada', 'CA'),
-    ('United Kingdom', 'UK');
+    ('Russia', 'RU', 'flag_ru.jpeg'),
+    ('United States of America', 'USA', 'flag_usa.jpeg'),
+    ('France', 'FR', 'flag_fr.jpeg'),
+    ('Germany', 'DE', 'flag_de.jpeg'),
+    ('Australia', 'AU', 'flag_au.jpeg'),
+    ('China', 'CN', 'flag_cn.jpeg'),
+    ('Canada', 'CA', 'flag_ca.jpeg'),
+    ('United Kingdom', 'UK', 'flag_uk.jpeg');
 
 create table authors(
     id serial primary key,
@@ -250,23 +251,24 @@ create table user_description(
     join_date date,
     bio varchar(512),
     country_id int references country(id),
-    user_id int references users(id)
+    user_id int references users(id),
+    icon_url varchar(64)
 );
-INSERT INTO user_description (email, password, join_date, bio, country_id, user_id)
+INSERT INTO user_description (email, password, join_date, bio, country_id, user_id, icon_url)
 VALUES
-    ('user1@example.com', MD5('password1'), '2023-01-01', 'Bio for User 1', 1, 1),
-    ('user2@example.com', MD5('password2'), '2023-02-02', 'Bio for User 2', 2, 2),
-    ('user3@example.com', MD5('password3'), '2023-03-03', 'Bio for User 3', 3, 3),
-    ('user4@example.com', MD5('password4'), '2023-04-04', 'Bio for User 4', 4, 4),
-    ('user5@example.com', MD5('password5'), '2023-05-05', 'Bio for User 5', 5, 5),
-    ('user6@example.com', MD5('password6'), '2023-06-06', 'Bio for User 6', 6, 6),
-    ('user7@example.com', MD5('password7'), '2023-07-07', 'Bio for User 7', 7, 7),
-    ('user8@example.com', MD5('password8'), '2023-08-08', 'Bio for User 8', 1, 8),
-    ('user9@example.com', MD5('password9'), '2023-09-09', 'Bio for User 9', 2, 9),
-    ('user10@example.com', MD5('password10'), '2023-10-10', 'Bio for User 10', 3, 10),
-    ('user11@example.com', MD5('password11'), '2023-11-11', 'Bio for User 11', 4, 11),
-    ('user12@example.com', MD5('password12'), '2023-12-12', 'Bio for User 12', 5, 12),
-    ('user13@example.com', MD5('password13'), '2024-01-01', 'Bio for User 13', 6, 13);
+    ('user1@example.com', MD5('password1'), '2023-01-01', 'Bio for User 1', 1, 1, 'u1_url.jpeg'),
+    ('user2@example.com', MD5('password2'), '2023-02-02', 'Bio for User 2', 2, 2, 'u2_url.jpeg'),
+    ('user3@example.com', MD5('password3'), '2023-03-03', 'Bio for User 3', 3, 3, 'u3_url.jpeg'),
+    ('user4@example.com', MD5('password4'), '2023-04-04', 'Bio for User 4', 4, 4, 'u4_url.jpeg'),
+    ('user5@example.com', MD5('password5'), '2023-05-05', 'Bio for User 5', 5, 5, 'u5_url.jpeg'),
+    ('user6@example.com', MD5('password6'), '2023-06-06', 'Bio for User 6', 6, 6, 'u6_url.jpeg'),
+    ('user7@example.com', MD5('password7'), '2023-07-07', 'Bio for User 7', 7, 7, 'u7_url.jpeg'),
+    ('user8@example.com', MD5('password8'), '2023-08-08', 'Bio for User 8', 1, 8, 'u8_url.jpeg'),
+    ('user9@example.com', MD5('password9'), '2023-09-09', 'Bio for User 9', 2, 9, 'u9_url.jpeg'),
+    ('user10@example.com', MD5('password10'), '2023-10-10', 'Bio for User 10', 3, 10, 'u10_url.jpeg'),
+    ('user11@example.com', MD5('password11'), '2023-11-11', 'Bio for User 11', 4, 11, 'u11_url.jpeg'),
+    ('user12@example.com', MD5('password12'), '2023-12-12', 'Bio for User 12', 5, 12, 'u12_url.jpeg'),
+    ('user13@example.com', MD5('password13'), '2024-01-01', 'Bio for User 13', 6, 13, 'u13_url.jpeg');
 
 
 create table bookmarks(
