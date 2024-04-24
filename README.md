@@ -3,7 +3,6 @@
 git clone https://github.com/stas224/BookMust2.0.git
 python3 -m venv venv
 pip install -r requirements.txt
-docker pull postgres
 /usr/bin/bash ./postgres_init.sh
 ```
 ## todo-list:
