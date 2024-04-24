@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -85,6 +87,19 @@ class User(db.Model):
     first_name = db.Column(db.String(256), nullable=False)
     last_name = db.Column(db.String(256), nullable=False)
     editions = db.relationship('UserEdition', back_populates='user')
+    descriptions = db.relationship('UserDescription', backref='user', lazy=True,
+                                   primaryjoin="User.id==UserDescription.user_id")
+
+
+class UserDescription(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(64), nullable=False)
+    password = db.Column(db.String(64), nullable=False)
+    join_date = db.Column(db.Date, default=datetime.utcnow)
+    bio = db.Column(db.String(512))
+    # country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    icon_url = db.Column(db.String(64))
 
 
 class UserEdition(db.Model):
@@ -114,11 +129,11 @@ def book_details():
         Author.last_name.label('author_last_name'),
         Publisher.name.label('publisher_name')
     ).join(Genre, BookBase.genre_id == Genre.id
-    ).join(BookAuthor, BookBase.id == BookAuthor.book_id
-    ).join(Author, BookAuthor.author_id == Author.id
-    ).join(BookPublisher, BookBase.id == BookPublisher.book_id
-    ).join(Publisher, BookPublisher.publisher_id == Publisher.id
-    ).all()
+           ).join(BookAuthor, BookBase.id == BookAuthor.book_id
+                  ).join(Author, BookAuthor.author_id == Author.id
+                         ).join(BookPublisher, BookBase.id == BookPublisher.book_id
+                                ).join(Publisher, BookPublisher.publisher_id == Publisher.id
+                                       ).all()
 
 
 def most_rating_editions(count=5):
@@ -127,8 +142,10 @@ def most_rating_editions(count=5):
         Publisher.name.label('publisher'),
         BookEdition.rating
     ).join(BookPublisher, BookPublisher.id == BookEdition.book_publisher_id
-    ).join(BookBase, BookBase.id == BookPublisher.book_id
-    ).join(Publisher, Publisher.id == BookPublisher.publisher_id
-    ).distinct(BookBase.name, Publisher.name, BookEdition.rating
-    ).order_by(BookEdition.rating.desc()
-    ).limit(count).all()
+           ).join(BookBase, BookBase.id == BookPublisher.book_id
+                  ).join(Publisher, Publisher.id == BookPublisher.publisher_id
+                         ).distinct(BookBase.name, Publisher.name, BookEdition.rating
+                                    ).order_by(BookEdition.rating.desc()
+                                               ).limit(count).all()
+
+
