@@ -1,14 +1,32 @@
 from flask import (Flask, flash, redirect, render_template, request, session,
                    url_for)
+from flask_admin import Admin
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from flask_admin.contrib.sqla import ModelView
 from models import (User, UserDescription, book_details, db,
-                    most_rating_editions)
+                    most_rating_editions, Author, Genre, BookBase, Publisher, Language,
+                    BookEdition, Review)
+
+
+class BookBaseView(ModelView):
+    column_list = ("id", "name", "isbn", "write_date")  # Укажите все поля, которые вы хотите отображать
+    form_columns = ("name", "isbn", "write_date")  # Поля в форме редактирования
+    column_searchable_list = ('name', 'isbn')  # Поля, по которым можно искать
+    can_view_details = True  # Разрешает просмотр деталей
+    column_details_list = ('id', "name", "isbn", "write_date")  # Поля в деталях записи
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Нужен для безопасности сессий
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myuser:mysecretpassword@localhost/mydb'
 db.init_app(app)
+
+admin = Admin(app, name='BookMust AdminPanel', template_mode='bootstrap3')
+
+admin.add_view(BookBaseView(BookBase, db.session))
+for table in [User, UserDescription, Author, Genre, Publisher, Language,
+              BookEdition, Review]:
+    admin.add_view(ModelView(table, db.session))
 
 
 @app.route('/top')

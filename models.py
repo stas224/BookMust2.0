@@ -19,17 +19,17 @@ class Genre(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.String(256))
-    books = db.relationship('BookBase', back_populates='genre')
+    # books = db.relationship('BookBase', back_populates='genre')
 
 
 class BookBase(db.Model):
     __tablename__ = 'book_base'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
-    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))
+    # genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))
     isbn = db.Column(db.String(256))
     write_date = db.Column(db.Date)
-    genre = db.relationship('Genre', back_populates='books')
+    # genre = db.relationship('Genre', back_populates='books')
     authors = db.relationship('BookAuthor', back_populates='book')
     publishers = db.relationship('BookPublisher', back_populates='book')
 
@@ -48,7 +48,7 @@ class Publisher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.String(256))
-    country = db.Column(db.String(256))
+    # country = db.Column(db.String(256))
     contacts = db.Column(db.String(256))
     books = db.relationship('BookPublisher', back_populates='publisher')
 
