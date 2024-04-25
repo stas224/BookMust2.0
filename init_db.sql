@@ -227,6 +227,29 @@ create table reviews(
     review varchar(1024),
     rating decimal
 );
+
+CREATE OR REPLACE FUNCTION update_book_rating()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Calculate the new average rating for the book edition
+    UPDATE book_edition
+    SET rating = (
+        SELECT COALESCE(AVG(rating), 0)
+        FROM reviews
+        WHERE user_edition_id = NEW.user_edition_id
+    )
+    WHERE id = NEW.user_edition_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Then, create a trigger to execute the function after each insert on the reviews table
+CREATE TRIGGER trigger_update_book_rating
+AFTER INSERT ON reviews
+FOR EACH ROW
+EXECUTE FUNCTION update_book_rating();
+
 INSERT INTO reviews (user_edition_id, review, rating)
 VALUES
     (1, 'Great book! Loved the storyline and characters.', 5),
@@ -234,7 +257,7 @@ VALUES
     (3, 'Disappointing. Expected more from this author.', 2),
     (4, 'Couldn''t put it down! A must-read for mystery lovers.', 5),
     (5, 'Not my cup of tea. Slow pacing and uninteresting characters.', 2),
-    (6, 'Absolutely captivating! One of the best books I''ve read.', 5),
+    (6, 'An engaging story with captivating characters, but the pacing felt slightly uneven', 4),
     (7, 'Struggled to get through it. Found it boring and predictable.', 2),
     (8, 'A timeless classic. Beautifully written.', 5),
     (9, 'Enjoyable read with some unexpected twists.', 4),

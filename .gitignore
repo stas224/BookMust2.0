@@ -3,3 +3,4 @@ venv
 __pycache__
 r.txt
 */.DS_Store
+t.py
