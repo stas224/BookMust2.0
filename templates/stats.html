@@ -75,7 +75,7 @@
     </div>
 {% endblock %}
 {% block script %}
-    <script>
+<script>
     const books = {{ books | tojson }};
     books.forEach((book, index) => {
         const ctx = document.getElementById('chart' + (index + 1)).getContext('2d');
@@ -100,7 +100,8 @@
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
+                        min: 0,
+                        max: 5
                     }
                 }
             }
