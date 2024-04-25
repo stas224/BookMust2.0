@@ -1,0 +1,72 @@
+{% extends "index.html" %}
+
+{% block style %}
+            .list-group-item {
+            margin-bottom: 20px; /* Добавляет расстояние между карточками */
+        }
+        .ratings-row {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+        }
+        .rating-item {
+            margin-right: 15px; /* Расстояние между элементами рейтинга */
+        }
+
+    [class*="col-md-10"] {
+    border: 1px solid blue; /* Красная граница позволяет ясно видеть границы колонок */
+    margin-top: -1px; /* Необходимо для устранения двойных границ */
+    margin-left: -1px; /* Также убирает двойные границы */
+    padding-top: 10px; /* Добавляет немного пространства внутри колонок */
+    padding-bottom: 10px; /* Аналогично, для визуального комфорта */
+}
+
+/* Если используется Bootstrap 4 и выше, может понадобиться обернуть колонки в .row */
+    .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    body {
+    background-image: url('https://delmoscow.ru/resources/news/6912cc9c.jpg');
+    background-position: top left;
+    background-size: 50px50px; /* Размер ячеек сетки */
+}
+    h3 {
+      font-family: 'Roboto'; /* Указание семейства шрифтов, включая загруженный шрифт */
+      font-size: 30px; /* Увеличение размера шрифта */
+  }
+    h1 {
+        font-family: "Lobster"
+    }
+
+
+
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+    <h1>Моя коллекция книг на BookMust</h1>
+        <div class="list-group">
+            {% for book in books %}
+            <div class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img src="{{ book.image_url }}" alt="Обложка" class="img-fluid">
+                    </div>
+                    <div class="col-md-10">
+                        <h3>{{ book.name }}</h3>
+                        <p>Жанр: {{ book.genres }}</p>
+                        <p>Автор: {{ book.author }}</p>
+                        <p>Издатель: {{ book.publisher }}</p>
+                        <div class="ratings-row">
+                            <p class="rating-item">Рейтинг на сайте: {{ book.site_rating }}</p>
+                            <p class="rating-item">Моя оценка: {{ book.user_rating }}</p>
+                        </div>
+                        <p>Мой отзыв: {{ book.user_review }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

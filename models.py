@@ -18,20 +18,31 @@ class Genre(db.Model):
     __tablename__ = 'genres'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
-    description = db.Column(db.String(256))
-    # books = db.relationship('BookBase', back_populates='genre')
+    description = db.Column(db.String(256), nullable=True)
+    # Удалите genre_id из BookBase и используйте это отношение для связи многие ко многим
+    books = db.relationship('BookBaseGenre', back_populates='genre', lazy='dynamic')
 
 
 class BookBase(db.Model):
     __tablename__ = 'book_base'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
-    # genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))
     isbn = db.Column(db.String(256))
     write_date = db.Column(db.Date)
-    # genre = db.relationship('Genre', back_populates='books')
+    genres = db.relationship('BookBaseGenre', back_populates='book', lazy='dynamic')
+    # Другие отношения
     authors = db.relationship('BookAuthor', back_populates='book')
     publishers = db.relationship('BookPublisher', back_populates='book')
+
+
+class BookBaseGenre(db.Model):
+    __tablename__ = 'book_base_genres'
+    id = db.Column(db.Integer, primary_key=True)
+    book_base_id = db.Column(db.Integer, db.ForeignKey('book_base.id'), nullable=False)
+    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'), nullable=False)
+
+    book = db.relationship('BookBase', back_populates='genres')
+    genre = db.relationship('Genre', back_populates='books')
 
 
 class BookAuthor(db.Model):
@@ -149,3 +160,52 @@ def most_rating_editions(count=5):
                                                ).limit(count).all()
 
 
+def get_user_books(user_id):
+    # Найти все издания пользователя
+    user_id = 1 if user_id != 1 else user_id
+    user_editions = UserEdition.query.filter_by(user_id=user_id).all()
+
+    results = []
+
+    for user_edition in user_editions:
+        # Информация об отзыве
+        reviews = Review.query.filter_by(user_edition_id=user_edition.id).all()
+
+        # Информация об издании
+        edition = user_edition.edition
+
+        if edition:
+            # Информация о издателе и книге
+            book_publisher = edition.book_publisher
+            publisher = book_publisher.publisher if book_publisher else None
+            book = book_publisher.book if book_publisher else None
+            genre_names = [genre_association.genre.name for genre_association in book.genres]
+
+            if book:
+                # Информация об авторах книги
+                authors = [ba.author for ba in book.authors]
+                author_names = ', '.join([f"{author.name} {author.last_name}" for author in authors if author])
+            else:
+                author_names = None
+
+            # Сбор данных для данного издания
+            edition_details = {
+                "name": book.name if book else "Недоступно",
+                "genres": ', '.join(genre_names),
+                "author": author_names,
+                "publisher": publisher.name if publisher else "Недоступно",
+                "site_rating": edition.rating,
+                "user_rating": None,
+                "user_review": None
+            }
+
+            # Информация об отзывах пользователя
+            if reviews:
+                # Предполагаем, что у каждого издания только один отзыв от пользователя
+                review = reviews[0]
+                edition_details["user_rating"] = review.rating
+                edition_details["user_review"] = review.review
+
+            results.append(edition_details)
+
+    return results
