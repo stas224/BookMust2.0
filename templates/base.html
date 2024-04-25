@@ -31,11 +31,9 @@
             <ul class="navbar-nav">
 
                 {% if session['login'] %}
-                    {% if session['user_id'] == 'admin' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Добавить книгу</a>
+                        <a class="nav-link" href="/search-and-add">Добавить книгу</a>
                     </li>
-                    {% endif %}
                     <a class="nav-link" href="#">Топы</a>
                     <a class="nav-link" href="#">Подборки</a>
                     <li class="nav-item">

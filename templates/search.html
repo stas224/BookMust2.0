@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Поиск и добавление книг</h1>
+    <form method="post" class="mb-4 d-flex align-items-center">
+        {{ form.hidden_tag() }}
+        <div class="form-group mb-0 mr-2 flex-grow-1">
+            {{ form.query.label(class="form-label sr-only") }}  <!-- скрытый label для доступности -->
+            {{ form.query(class="form-control", size=20, placeholder="Anna ...") }}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% elif results %}
+        <h2>Вот что мы нашли у себя в базе</h2>
+        <div class="row">
+        {% for edition in results %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ edition.book_publisher.book.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ edition.book_publisher.book.authors[0].author.name }} {{ edition.book_publisher.book.authors[0].author.last_name }}</h6>
+                        <p class="card-text">
+                            Genre: {{ edition.book_publisher.book.genres[0].genre.name }}
+                        <br> Publisher: {{ edition.book_publisher.publisher.name }} <br>
+                            Rating: {{ edition.rating }}
+                        </p>
+                        <form action="{{ url_for('search_and_add') }}" method="post">
+                            <input type="hidden" name="edition_id" value="{{ edition.id }}">
+                            <button type="submit" class="btn btn-primary">Add to Collection</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p>{{ text }}</p>
+    {% endif %}
+</div>
+{% endblock %}
