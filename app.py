@@ -1,143 +1,60 @@
-from hashlib import md5
+from flask import Flask, request
+from flask_admin import Admin
+from models import db
+from views import AuthAdminIndexView, show_books_view, top_books_view, index_view, activate_admin_views, \
+    register_view, after_registration_view, login_view, logout_view, account_view
 
-from flask import (Flask, flash, redirect, render_template, request, session,
-                   url_for)
-from flask_admin import Admin, AdminIndexView, expose
-from flask_admin.contrib.sqla import ModelView
-from models import (User, UserDescription, book_details, db, get_user_books,
-                    most_rating_editions, Author, Genre, BookBase, Publisher, Language,
-                    BookEdition, Review)
-
-
-class AuthAdminIndexView(AdminIndexView):
-    @expose('/')
-    def index(self):
-        if 'user_id' in session and session['user_id'] == 'admin':
-            return super(AuthAdminIndexView, self).index()
-        else:
-            return redirect(url_for('login'))  # Предполагается, что у вас есть endpoint для login
-
-    def is_accessible(self):
-        return 'user_id' in session and session['user_id'] == 'admin'
-
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('login'))
-
-
-class AuthAdminModelView(ModelView):
-    def is_accessible(self):
-        return 'user_id' in session and session['user_id'] == 'admin'
-
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('login'))
-
-
-class BookBaseView(AuthAdminModelView):
-    column_list = ("id", "name", "isbn", "write_date")
-    form_columns = ("name", "isbn", "write_date")
-    column_searchable_list = ('name', 'isbn')
-    can_view_details = True
-    column_details_list = ('id', "name", "isbn", "write_date")
-
-
+# configure app
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myuser:mysecretpassword@localhost/mydb'
 db.init_app(app)
 
+# configure admin panel
 admin = Admin(app, name='BookMust AdminPanel', template_mode='bootstrap3', index_view=AuthAdminIndexView())
-
-admin.add_view(BookBaseView(BookBase, db.session))
-for table in [User, UserDescription, Author, Genre, Publisher, Language,
-              BookEdition, Review]:
-    admin.add_view(AuthAdminModelView(table, db.session))
-
-
-@app.route('/top')
-def top_books():
-    return render_template('top_books.html', books=most_rating_editions())
-
-
-@app.route('/show-book')
-def show_books():
-    return render_template('books_template.html', results=book_details())
+activate_admin_views(admin, db)
 
 
 @app.route('/')
 def index():
-    return render_template('index.html', books=most_rating_editions())
+    return index_view()
 
 
+# auth
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'GET':
-        return render_template('register.html')
-
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    email = request.form['email']
-    password = request.form['password']
-
-    new_user = User(first_name=first_name, last_name=last_name)
-    db.session.add(new_user)
-    db.session.commit()
-
-    hashed_password = md5(password.encode()).hexdigest()
-    new_user_description = UserDescription(
-        user_id=new_user.id,
-        email=email,
-        password=hashed_password
-    )
-    db.session.add(new_user_description)
-    db.session.commit()
-    return redirect(url_for('users'))
+    return register_view(request, db)
 
 
 @app.route('/users')
-def users():
-    all_users = User.query.all()
-    return render_template('after_registration.html', users=all_users, total=len(all_users))
-
-
-@app.route('/logout')
-def logout():
-    session.pop('login', None)
-    session.pop('user_id', None)
-    session.pop('name', None)
-    return redirect(url_for('index'))
+def after_registration():
+    return after_registration_view()
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'GET':
-        return render_template('login.html')
+    return login_view(request)
 
-    email = request.form['email']
-    password = request.form['password']
 
-    if email == 'admin@admin.ru' and password == 'admin':
-        session['user_id'] = 'admin'
-        session['login'] = True
-        session['name'] = 'admin'
-        return redirect(url_for('index'))
+@app.route('/logout')
+def logout():
+    return logout_view()
 
-    user = UserDescription.query.filter_by(email=email, password=md5(password.encode()).hexdigest()).first()
-    if user:
-        session['user_id'] = user.id
-        session['login'] = True
-        session['name'] = user.user.first_name
-        return redirect(url_for('index'))
-    else:
-        flash('Неверный адрес электронной почты или пароль')
+
+# presentation for users
+@app.route('/top')
+def top_books():
+    return top_books_view()
+
+
+@app.route('/show-book')
+def show_books():
+    return show_books_view()
 
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
-    if "user_id" in session:
-        if session['user_id'] == 'admin':
-            return redirect('/admin')
-        return render_template('account.html', books=get_user_books(session['user_id']))
-    return redirect(url_for('index'))
+    return account_view(request)
 
 
 if __name__ == "__main__":
