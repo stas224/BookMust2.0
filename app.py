@@ -59,6 +59,6 @@ def account():
     return account_view(request)
 
 
+fill_s3_if_not_filled()
 if __name__ == "__main__":
-    fill_s3_if_not_filled()
     app.run(debug=True)

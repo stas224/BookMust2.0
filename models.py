@@ -232,7 +232,7 @@ def get_user_books(user_id):
                     'get_object',
                     Params={
                         "Bucket": bucket_name,
-                        "Key": f"{bucket_name}/covers/{edition.cover_path}"
+                        "Key": f"covers/{edition.cover_path}"
                     }
                 )
             }
