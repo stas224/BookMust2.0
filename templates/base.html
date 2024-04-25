@@ -33,11 +33,9 @@
                 <a class="nav-link" href="#">Подборки</a>
 
                 {% if session['login'] %}
-                    {% if session['user_id'] == 'admin' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Добавить книгу</a>
+                        <a class="nav-link" href="/search-and-add">Добавить книгу</a>
                     </li>
-                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="#">Статистика</a>
                     </li>

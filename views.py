@@ -1,11 +1,16 @@
+from hashlib import md5
+
+from flask import flash, redirect, render_template, session, url_for
 from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
-from flask import session, redirect, url_for, render_template, flash
-from models import (User, UserDescription, Author, Genre, Publisher, Language, BookEdition, Review, get_user_books,
-                    BookBase)
+from flask_wtf import FlaskForm
+from sqlalchemy.orm import joinedload
+from wtforms import StringField, SubmitField
 
-from models import book_details, most_rating_editions
-from hashlib import md5
+from models import (Author, BookBase, BookBaseGenre, BookEdition,
+                    BookPublisher, BooksAuthor, Genre, Language, Publisher,
+                    Review, User, UserDescription, UserEdition, book_details,
+                    get_user_books, most_rating_editions)
 
 
 class AuthAdminIndexView(AdminIndexView):
@@ -14,7 +19,7 @@ class AuthAdminIndexView(AdminIndexView):
         if 'user_id' in session and session['user_id'] == 'admin':
             return super(AuthAdminIndexView, self).index()
         else:
-            return redirect(url_for('login'))  # Предполагается, что у вас есть endpoint для login
+            return redirect(url_for('login'))
 
     def is_accessible(self):
         return 'user_id' in session and session['user_id'] == 'admin'
@@ -123,3 +128,66 @@ def account_view(request):
             return redirect('/admin')
         return render_template('account.html', books=get_user_books(session['user_id']))
     return redirect(url_for('index'))
+
+
+class SearchForm(FlaskForm):
+    query = StringField('')
+    submit = SubmitField('Поиск')
+
+
+def search_and_add_view(request, db):
+    form = SearchForm()
+    results = []
+    message = text = ""
+
+    if form.validate_on_submit() and 'query' in request.form:
+        query = form.query.data
+        results = search_results(query, db)
+        if not results:
+            text = "No books found matching your query"
+
+    elif 'edition_id' in request.form:
+        # Добавление книги в коллекцию
+        message = add_to_collection(request.form['edition_id'], db)
+
+    return render_template('search.html', form=form, results=results, message=message, text=text)
+
+
+def search_results(query, db):
+    # Объединение запросов для поиска по различным полям
+    results = BookEdition.query \
+        .join(BookPublisher) \
+        .join(BookBase) \
+        .join(BooksAuthor) \
+        .join(Author) \
+        .join(BookBaseGenre) \
+        .join(Genre) \
+        .join(Publisher) \
+        .options(joinedload(BookEdition.book_publisher).joinedload(BookPublisher.publisher),
+                 joinedload(BookEdition.book_publisher).joinedload(BookPublisher.book).joinedload(
+                     BookBase.authors).joinedload(BooksAuthor.author),
+                 joinedload(BookEdition.book_publisher).joinedload(BookPublisher.book).joinedload(
+                     BookBase.genres).joinedload(BookBaseGenre.genre)) \
+        .filter(
+        db.or_(
+            BookBase.name.ilike(f'%{query}%'),
+            Author.name.ilike(f'%{query}%'),
+            Author.last_name.ilike(f'%{query}%'),
+            Genre.name.ilike(f'%{query}%'),
+            Publisher.name.ilike(f'%{query}%'),
+            BookEdition.rating.cast(db.String).ilike(f'%{query}%')
+        )
+    ).distinct().all()
+    return results
+
+
+def add_to_collection(edition_id, db):
+    user_id = session['user_id']  # Получите ID пользователя из сессии или аутентификации
+    existing_entry = UserEdition.query.filter_by(user_id=user_id, edition_id=edition_id).first()
+    if not existing_entry:
+        new_entry = UserEdition(user_id=user_id, edition_id=edition_id)
+        db.session.add(new_entry)
+        db.session.commit()
+        return "Добавилено в коллекцию, беги скорее проверяй свой личный кабинет!"
+    else:
+        return "Эта книга уже есть у тебя в коллекции!"

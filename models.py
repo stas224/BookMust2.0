@@ -2,8 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-
-from bookmust.utils.s3 import get_s3, bucket_name
+from bookmust.utils.s3 import bucket_name, get_s3
 
 db = SQLAlchemy()
 

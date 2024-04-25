@@ -1,10 +1,12 @@
 from flask import Flask, request
 from flask_admin import Admin
-from models import db
-from views import AuthAdminIndexView, show_books_view, top_books_view, index_view, activate_admin_views, \
-    register_view, after_registration_view, login_view, logout_view, account_view
 
 from bookmust.utils.s3 import fill_s3_if_not_filled
+from models import db
+from views import (AuthAdminIndexView, account_view, activate_admin_views,
+                   search_and_add_view, after_registration_view, index_view,
+                   login_view, logout_view, register_view, show_books_view,
+                   top_books_view)
 
 # configure app
 app = Flask(__name__)
@@ -43,7 +45,7 @@ def logout():
     return logout_view()
 
 
-# presentation for users
+# common func
 @app.route('/top')
 def top_books():
     return top_books_view()
@@ -54,11 +56,17 @@ def show_books():
     return show_books_view()
 
 
+# for users
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     return account_view(request)
 
 
-fill_s3_if_not_filled()
+@app.route('/search-and-add', methods=['GET', 'POST'])
+def search_and_add():
+    return search_and_add_view(request, db)
+
+
 if __name__ == "__main__":
+    fill_s3_if_not_filled()
     app.run(debug=True)
