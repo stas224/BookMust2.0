@@ -161,7 +161,7 @@ create table book_edition(
     cover_path varchar(256),
     rating decimal default 0
 );
-INSERT INTO book_edition (book_publisher_id, release_date, language_id, url)
+INSERT INTO book_edition (book_publisher_id, release_date, language_id, url, cover_path)
 VALUES
     (1, '2023-01-15', 1, 'lotr1.txt', 'lotr1.png'),
     (2, '2023-02-20', 2, 'hobbit1.txt', 'hobbit1.png'),

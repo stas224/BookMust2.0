@@ -2,6 +2,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
+
+from bookmust.utils.s3 import get_s3, bucket_name
+
 db = SQLAlchemy()
 
 
@@ -89,6 +92,7 @@ class BookEdition(db.Model):
     release_date = db.Column(db.Date)
     language_id = db.Column(db.Integer, ForeignKey('languages.id'))
     url = db.Column(db.String(256))
+    cover_path = db.Column(db.String(256))
     rating = db.Column(db.Numeric, default=0)
     language = relationship("Language", backref="editions")
     book_publisher = relationship("BookPublisher", backref="editions")
@@ -223,7 +227,14 @@ def get_user_books(user_id):
                 "publisher": publisher.name if publisher else "Недоступно",
                 "site_rating": edition.rating,
                 "user_rating": None,
-                "user_review": None
+                "user_review": None,
+                "image_url": get_s3().generate_presigned_url(
+                    'get_object',
+                    Params={
+                        "Bucket": bucket_name,
+                        "Key": f"{bucket_name}/covers/{edition.cover_path}"
+                    }
+                )
             }
 
             # Информация об отзывах пользователя

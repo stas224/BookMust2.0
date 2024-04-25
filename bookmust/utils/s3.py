@@ -3,6 +3,8 @@ from io import BytesIO
 
 import boto3
 
+bucket_name = "bookmust"
+
 
 def get_s3():
     return boto3.client(
@@ -15,8 +17,6 @@ def get_s3():
 
 
 def fill_s3_if_not_filled():
-    bucket_name = "bookmust"
-
     buckets = [b["Name"] for b in get_s3().list_buckets()["Buckets"]]
     if bucket_name in buckets:
         return
