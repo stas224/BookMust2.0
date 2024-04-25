@@ -4,6 +4,8 @@ from models import db
 from views import AuthAdminIndexView, show_books_view, top_books_view, index_view, activate_admin_views, \
     register_view, after_registration_view, login_view, logout_view, account_view
 
+from bookmust.utils.s3 import fill_s3_if_not_filled
+
 # configure app
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -58,4 +60,5 @@ def account():
 
 
 if __name__ == "__main__":
+    fill_s3_if_not_filled()
     app.run(debug=True)
