@@ -16,10 +16,6 @@
             <h1 class="display-4">Приветствуем тебя, {{ session['name'] }}!</h1>
             <p class="lead">Добро пожаловать на наш сайт. Надеемся, ты найдешь здесь много полезного.</p>
         </div>
-    {% else %}
-        <div class="container mt-4">
-            <button class="btn btn-primary col-12" onclick="location.href='/login';">Войти</button>
-        </div>
     {% endif %}
 
     <div class="container mt-5">

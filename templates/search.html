@@ -23,10 +23,17 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ edition.book_publisher.book.name }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ edition.book_publisher.book.authors[0].author.name }} {{ edition.book_publisher.book.authors[0].author.last_name }}</h6>
+                        <div class="col-md-2">
+                            <img src="{{ edition.cover }}" alt="{{ edition.book_publisher.book.name }} cover" class="book-cover" >
+                        </div>
                         <p class="card-text">
                             Genre: {{ edition.book_publisher.book.genres[0].genre.name }}
                         <br> Publisher: {{ edition.book_publisher.publisher.name }} <br>
-                            Rating: {{ edition.rating }}
+                            {% if edition.rating %}
+                                Rating: {{ edition.rating | round(2) }}
+                            {% else %}
+                                Book is not rated yet ( ´•︵•` )
+                            {% endif %}
                         </p>
                         <form action="{{ url_for('search_and_add') }}" method="post">
                             <input type="hidden" name="edition_id" value="{{ edition.id }}">

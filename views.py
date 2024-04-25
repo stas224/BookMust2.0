@@ -11,7 +11,7 @@ from models import (Author, BookBase, BookBaseGenre, BookEdition,
                     BookPublisher, BooksAuthor, Genre, Language, Publisher,
                     Review, User, UserDescription, UserEdition, book_details,
                     get_user_books, most_rating_editions, get_stats)
-
+from bookmust.utils.s3 import get_presigned_url
 
 class AuthAdminIndexView(AdminIndexView):
     @expose('/')
@@ -148,7 +148,7 @@ def search_and_add_view(request, db):
         query = form.query.data
         results = search_results(query, db)
         if not results:
-            text = "No books found matching your query"
+            text = "Ничего не найдено (╥﹏╥)"
 
     elif 'edition_id' in request.form:
         # Добавление книги в коллекцию
@@ -182,6 +182,8 @@ def search_results(query, db):
             BookEdition.rating.cast(db.String).ilike(f'%{query}%')
         )
     ).distinct().all()
+    for book_edition in results:
+        book_edition.cover = get_presigned_url(f"covers/{book_edition.cover_path}")
     return results
 
 
@@ -192,6 +194,6 @@ def add_to_collection(edition_id, db):
         new_entry = UserEdition(user_id=user_id, edition_id=edition_id)
         db.session.add(new_entry)
         db.session.commit()
-        return "Добавилено в коллекцию, беги скорее проверяй свой личный кабинет!"
+        return "Добавлено в коллекцию, беги скорее проверяй свой личный кабинет!"
     else:
         return "Эта книга уже есть у тебя в коллекции!"

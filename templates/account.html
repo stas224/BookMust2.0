@@ -67,11 +67,17 @@
                             <p>Издатель: {{ book.publisher }}</p>
 
                             <div class="ratings-row">
-                                <p class="rating-item">Рейтинг на сайте: {{ book.site_rating | round(2) }}</p>
-                                <p class="rating-item">Моя оценка: {{ book.user_rating }}</p>
+                                {% if book.site_rating %}
+                                    <p class="rating-item">Рейтинг на сайте: {{ book.site_rating | round(2) }}</p>
+                                {% endif %}
+                                {% if book.user_rating != None %}
+                                    <p class="rating-item">Моя оценка: {{ book.user_rating }}</p>
+                                {% endif %}
                             </div>
 
-                            <p>Мой отзыв: {{ book.user_review }}</p>
+                            {% if book.user_review != None %}
+                                <p>Мой отзыв: {{ book.user_review }}</p>
+                            {% endif %}
                         </div>
 
                     </div>

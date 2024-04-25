@@ -7,3 +7,4 @@ flask_admin
 werkzeug
 localstack[runtime]
 wtforms
+flask-wtf
