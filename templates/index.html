@@ -21,25 +21,26 @@
             <button class="btn btn-primary col-12" onclick="location.href='/login';">Войти</button>
         </div>
     {% endif %}
-<div class="container mt-5">
-    <h1>Selection from BookMust</h1>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Rating</th>
-                <th>Publisher</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for book in books %}
-            <tr>
-                <td>{{ book.name }}</td>
-                <td>{{ book.rating }}</td>
-                <td>{{ book.publisher }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+
+    <div class="container mt-5">
+        <h1>Selection from BookMust</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Rating</th>
+                    <th>Publisher</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.name }}</td>
+                    <td>{{ book.rating }}</td>
+                    <td>{{ book.publisher }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
