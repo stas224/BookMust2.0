@@ -1,7 +1,8 @@
+from hashlib import md5
+
 from flask import (Flask, flash, redirect, render_template, request, session,
                    url_for)
 from flask_admin import Admin, AdminIndexView, expose
-from werkzeug.security import check_password_hash, generate_password_hash
 from flask_admin.contrib.sqla import ModelView
 from models import (User, UserDescription, book_details, db, get_user_books,
                     most_rating_editions, Author, Genre, BookBase, Publisher, Language,
@@ -81,7 +82,7 @@ def register():
     db.session.add(new_user)
     db.session.commit()
 
-    hashed_password = password
+    hashed_password = md5(password.encode()).hexdigest()
     new_user_description = UserDescription(
         user_id=new_user.id,
         email=email,
@@ -120,7 +121,7 @@ def login():
         session['name'] = 'admin'
         return redirect(url_for('index'))
 
-    user = UserDescription.query.filter_by(email=email, password=password).first()
+    user = UserDescription.query.filter_by(email=email, password=md5(password.encode()).hexdigest()).first()
     if user:
         session['user_id'] = user.id
         session['login'] = True
