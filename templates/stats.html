@@ -1,33 +1,78 @@
 {% extends "base.html" %}
 
 {% block style %}
+    .books-container {
+        width: 60%;
+        margin: 0 left;
+        display: flex;
+        flex-direction: column;
+    }
+
     .book-container {
         display: flex;
         align-items: center;
-        margin-bottom: 50px;
-        border-bottom: 1px solid #ccc; /* Optional: adds a divider between book entries */
+        gap: 20px;
+        width: 70%;
+        margin: 20px auto;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-sizing: border-box;
     }
+
+    .book-cover-container {
+        flex: 0 0 auto;
+        width: 150px;
+        height: 200px;
+    }
+
+    .book-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .book-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .text-container {
+        text-align: center;
+    }
+
     .chart-container {
-        position: relative;
-        width: 400px;
-        height: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: auto;
+        max-width: 600px;
+        margin: 0 auto;
     }
 {% endblock %}
 {% block content %}
-    {% for book in books %}
-    <div class="book-container">
-        <div class="col-md-2">
-            <img src="{{ book.cover }}" alt="{{ book.title }} cover" class="book-cover" title="Publisher: {{ book.publisher_name }}, Language: {{ book.language }}, Date: {{ book.date }}" >
-        </div>
-        <div>
-            <h2>{{ book.title }}</h2>
-            <p>Publisher: {{ book.publisher_name }}, Date: {{ book.date }}, Language: {{ book.language }}</p>
-            <div class="chart-container">
-                <canvas id="chart{{ loop.index }}"></canvas>
+    <div class="books-container">
+        {% for book in books %}
+            <div class="book-container">
+                <div class="book-cover-container">
+                    <img src="{{ book.cover }}" alt="{{ book.title }} cover" class="book-cover" title="Publisher: {{ book.publisher_name }}, Language: {{ book.language }}, Date: {{ book.date }}">
+                </div>
+                <div class="book-details">
+                    <div class="text-container">
+                        <h2>{{ book.title }}</h2>
+                        <p>Publisher: {{ book.publisher_name }}, Date: {{ book.date }}, Language: {{ book.language }}</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart{{ loop.index }}"></canvas>
+                    </div>
+                </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 {% endblock %}
 {% block script %}
     <script>
