@@ -16,6 +16,16 @@ def get_s3():
     )
 
 
+def get_presigned_url(key):
+    return get_s3().generate_presigned_url(
+        'get_object',
+        Params={
+            "Bucket": bucket_name,
+            "Key": key
+        }
+    )
+
+
 def fill_s3_if_not_filled():
     buckets = [b["Name"] for b in get_s3().list_buckets()["Buckets"]]
     if bucket_name in buckets:

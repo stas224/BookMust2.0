@@ -219,7 +219,8 @@ VALUES
     (1, 1), (1, 2), (1, 3), (2, 4), (2, 5),
     (3, 6), (3, 7), (4, 8), (4, 9), (5, 10),
     (6, 11), (6, 12), (7, 13), (7, 14), (8, 15),
-    (9, 16), (9, 17), (10, 18), (10, 19), (11, 20);
+    (9, 16), (9, 17), (10, 18), (10, 19), (11, 20),
+    (2, 1);
 
 create table reviews(
     id serial primary key,
@@ -228,27 +229,38 @@ create table reviews(
     rating decimal
 );
 
-CREATE OR REPLACE FUNCTION update_book_rating()
+CREATE OR REPLACE FUNCTION update_book_edition_rating()
 RETURNS TRIGGER AS $$
+DECLARE
+    new_average DECIMAL;
 BEGIN
-    -- Calculate the new average rating for the book edition
-    UPDATE book_edition
-    SET rating = (
-        SELECT COALESCE(AVG(rating), 0)
-        FROM reviews
-        WHERE user_edition_id = NEW.user_edition_id
-    )
-    WHERE id = NEW.user_edition_id;
+    SELECT AVG(rating) INTO new_average
+    FROM reviews
+    JOIN user_edition ON user_edition.id = reviews.user_edition_id
+    WHERE user_edition.edition_id = (
+        SELECT edition_id
+        FROM user_edition
+        WHERE id = NEW.user_edition_id
+    );
+
+    IF new_average IS NOT NULL THEN
+        UPDATE book_edition
+        SET rating = new_average
+        WHERE id = (
+            SELECT edition_id
+            FROM user_edition
+            WHERE id = NEW.user_edition_id
+        );
+    END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Then, create a trigger to execute the function after each insert on the reviews table
 CREATE TRIGGER trigger_update_book_rating
 AFTER INSERT ON reviews
 FOR EACH ROW
-EXECUTE FUNCTION update_book_rating();
+EXECUTE FUNCTION update_book_edition_rating();
 
 INSERT INTO reviews (user_edition_id, review, rating)
 VALUES
@@ -266,7 +278,8 @@ VALUES
     (12, 'Thrilling from start to finish. Highly recommend!', 5),
     (13, 'Interesting premise, but execution fell short.', 3),
     (14, 'Couldn''t connect with the characters. Story lacked depth.', 2),
-    (15, 'Compelling and thought-provoking. Left me wanting more.', 4);
+    (15, 'Compelling and thought-provoking. Left me wanting more.', 4),
+    (21, 'Not good book', 1);
 
 create table user_description(
     id serial primary key,
@@ -280,7 +293,7 @@ create table user_description(
 );
 INSERT INTO user_description (email, password, join_date, bio, country_id, user_id, icon_url)
 VALUES
-    ('user1@example.com', MD5('password1'), '2023-01-01', 'Bio for User 1', 1, 1, 'u1_url.png'),
+    ('1@1.1', MD5('1'), '2023-01-01', 'Bio for User 1', 1, 1, 'u1_url.png'),
     ('user2@example.com', MD5('password2'), '2023-02-02', 'Bio for User 2', 2, 2, 'u2_url.png'),
     ('user3@example.com', MD5('password3'), '2023-03-03', 'Bio for User 3', 3, 3, 'u3_url.png'),
     ('user4@example.com', MD5('password4'), '2023-04-04', 'Bio for User 4', 4, 4, 'u4_url.png'),

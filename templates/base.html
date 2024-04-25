@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookMust-{% block title %}{% endblock %}</title>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
@@ -29,8 +29,6 @@
         {% block nav %} {% endblock %}
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <a class="nav-link" href="#">Топы</a>
-                <a class="nav-link" href="#">Подборки</a>
 
                 {% if session['login'] %}
                     {% if session['user_id'] == 'admin' %}
@@ -38,8 +36,10 @@
                         <a class="nav-link" href="#">Добавить книгу</a>
                     </li>
                     {% endif %}
+                    <a class="nav-link" href="#">Топы</a>
+                    <a class="nav-link" href="#">Подборки</a>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Статистика</a>
+                        <a class="nav-link" href="/stats">Статистика</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/account">Личный кабинет</a>
@@ -62,3 +62,4 @@
 </body>
 {% block content %} {% endblock %}
 </html>
+{% block script %} {% endblock %}

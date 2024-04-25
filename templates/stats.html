@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block style %}
+    .book-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 50px;
+        border-bottom: 1px solid #ccc; /* Optional: adds a divider between book entries */
+    }
+    .book-cover {
+        width: 150px;   /* Set the width of the cover */
+        height: 200px;  /* Set the height of the cover */
+        object-fit: cover; /* Ensures the image covers the area without distortion */
+        margin-right: 20px;
+    }
+    .chart-container {
+        position: relative;
+        width: 400px;
+        height: 250px;
+    }
+{% endblock %}
+{% block content %}
+    {% for book in books %}
+    <div class="book-container">
+        <div class="col-md-2">
+            <img src="{{ book.cover }}" alt="{{ book.title }} cover" class="book-cover" title="Publisher: {{ book.publisher_name }}, Language: {{ book.language }}, Date: {{ book.date }}" >
+        </div>
+        <div>
+            <h2>{{ book.title }}</h2>
+            <p>Publisher: {{ book.publisher_name }}, Date: {{ book.date }}, Language: {{ book.language }}</p>
+            <div class="chart-container">
+                <canvas id="chart{{ loop.index }}"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
+{% block script %}
+    <script>
+    const books = {{ books | tojson }};
+    books.forEach((book, index) => {
+        const ctx = document.getElementById('chart' + (index + 1)).getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['User Rating', 'Book Rating'],
+                datasets: [{
+                    label: book.title,
+                    data: [book.user_rating, book.book_rating],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(54, 162, 235, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

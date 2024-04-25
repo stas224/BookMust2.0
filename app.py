@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_admin import Admin
 from models import db
 from views import AuthAdminIndexView, show_books_view, top_books_view, index_view, activate_admin_views, \
-    register_view, after_registration_view, login_view, logout_view, account_view
+    register_view, after_registration_view, login_view, logout_view, account_view, stats_view
 
 from bookmust.utils.s3 import fill_s3_if_not_filled
 
@@ -57,6 +57,11 @@ def show_books():
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     return account_view(request)
+
+
+@app.route('/stats')
+def stats():
+    return stats_view()
 
 
 fill_s3_if_not_filled()

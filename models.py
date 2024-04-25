@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 
-from bookmust.utils.s3 import get_s3, bucket_name
+from bookmust.utils.s3 import get_presigned_url
 
 db = SQLAlchemy()
 
@@ -228,13 +228,7 @@ def get_user_books(user_id):
                 "site_rating": edition.rating,
                 "user_rating": None,
                 "user_review": None,
-                "image_url": get_s3().generate_presigned_url(
-                    'get_object',
-                    Params={
-                        "Bucket": bucket_name,
-                        "Key": f"covers/{edition.cover_path}"
-                    }
-                )
+                "image_url": get_presigned_url(f"covers/{edition.cover_path}")
             }
 
             # Информация об отзывах пользователя
@@ -247,3 +241,33 @@ def get_user_books(user_id):
             results.append(edition_details)
 
     return results
+
+
+def get_stats(user_id):
+    data = []
+    user_editions = UserEdition.query.filter_by(user_id=user_id).all()
+
+    for user_edition in user_editions:
+        reviews = Review.query.filter_by(user_edition_id=user_edition.id).all()
+        if not reviews:
+            continue
+        user_rating = reviews[0].rating
+        edition_id = user_edition.edition_id
+        book_edition = BookEdition.query.filter_by(id=edition_id).all()[0]
+        language = Language.query.filter_by(id=book_edition.language_id).all()[0].short_name
+        book_publisher_id = book_edition.book_publisher_id
+        book_publisher = BookPublisher.query.filter_by(id=book_publisher_id).all()[0]
+        book_id = book_publisher.book_id
+        publisher_id = book_publisher.publisher_id
+        book = BookBase.query.filter_by(id=book_id).all()[0]
+        publisher_name = Publisher.query.filter_by(id=publisher_id).all()[0].name
+        data.append({
+            "title": book.name,
+            "publisher_name": publisher_name,
+            "language": language,
+            "date": book_edition.release_date,
+            "user_rating": user_rating,
+            "book_rating": book_edition.rating,
+            "cover": get_presigned_url(f"covers/{book_edition.cover_path}")
+        })
+    return data

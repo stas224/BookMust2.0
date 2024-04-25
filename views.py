@@ -2,7 +2,7 @@ from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask import session, redirect, url_for, render_template, flash
 from models import (User, UserDescription, Author, Genre, Publisher, Language, BookEdition, Review, get_user_books,
-                    BookBase)
+                    BookBase, get_stats)
 
 from models import book_details, most_rating_editions
 from hashlib import md5
@@ -49,6 +49,10 @@ def top_books_view():
 
 def index_view():
     return render_template('index.html', books=most_rating_editions())
+
+
+def stats_view():
+    return render_template('stats.html', books=get_stats(session["user_id"]))
 
 
 def activate_admin_views(admin, db):
