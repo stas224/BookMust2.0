@@ -57,6 +57,11 @@ def show_books():
     return show_books_view()
 
 
+@app.route('/collection', methods=['GET', 'POST'])
+def collection():
+    return collection_view()
+
+
 # for users
 @app.route('/account', methods=['GET', 'POST'])
 def account():

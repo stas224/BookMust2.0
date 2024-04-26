@@ -1,6 +1,7 @@
+import datetime
 from hashlib import md5
 
-from flask import Request, flash, redirect, render_template, session, url_for
+from flask import Request, make_response, redirect, render_template, session, url_for
 from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_wtf import FlaskForm
@@ -87,11 +88,13 @@ def register_view(request, db):
     new_user_description = UserDescription(
         user_id=new_user.id,
         email=email,
-        password=hashed_password
+        password=hashed_password,
+        join_date=datetime.datetime.now(),
+        bio=""
     )
     db.session.add(new_user_description)
     db.session.commit()
-    return redirect(url_for('users'))
+    return redirect(url_for('after_registration'))
 
 
 def after_registration_view():
@@ -119,7 +122,7 @@ def login_view(request):
         session['name'] = user.user.first_name
         return redirect(url_for('index'))
     else:
-        flash('Неверный адрес электронной почты или пароль')
+        return make_response("Неправильные данные")
 
 
 def logout_view():
@@ -129,7 +132,7 @@ def logout_view():
     return redirect(url_for('index'))
 
 
-def collection_view(request):
+def collection_view():
     if "user_id" in session:
         return render_template('collection.html', books=get_user_books(session['user_id'], review_flag=False))
     return redirect(url_for('index'))
@@ -255,7 +258,7 @@ def add_book_account_view(request, db):
             db.session.add(new_status)
 
     db.session.commit()
-    return redirect(url_for('account'))
+    return redirect(url_for('collection'))
 
 
 def delete_user_edition_view(request, db):
