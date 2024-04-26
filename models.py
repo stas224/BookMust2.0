@@ -191,42 +191,15 @@ def most_rating_editions(count=5):
                                                ).limit(count).all()
 
 
-def get_user_books(user_id):
-    # Найти все издания пользователя
+def get_user_books(user_id, review_flag=True):
     user_editions = UserEdition.query.filter_by(user_id=user_id).all()
-
     results = []
 
     for user_edition in user_editions:
-        edition_details = get_edition_info(user_edition, review_flag=False)
-
-        book_publisher = user_edition.edition.book_publisher
-        book = book_publisher.book if book_publisher else None
-        genre_names = [genre_association.genre.name for genre_association in book.genres]
-
-        if book:
-            authors = [ba.author for ba in book.authors]
-            author_names = ', '.join([f"{author.name} {author.last_name}" for author in authors if author])
-        else:
-            author_names = None
-
-        edition_details['genres'] = ', '.join(genre_names)
-        edition_details['author'] = author_names
+        edition_details = get_edition_info(user_edition, review_flag=review_flag)
         results.append(edition_details)
 
     return results
-
-
-def get_stats(user_id):
-    data = []
-    user_editions = UserEdition.query.filter_by(user_id=user_id).all()
-
-    for user_edition in user_editions:
-        edition_info = get_edition_info(user_edition)
-        if edition_info:
-            data.append(get_edition_info(user_edition))
-
-    return data
 
 
 def get_edition_info(user_edition: UserEdition, review_flag=True):
@@ -249,13 +222,19 @@ def get_edition_info(user_edition: UserEdition, review_flag=True):
     book_publisher_id = book_edition.book_publisher_id
     book_publisher = BookPublisher.query.filter_by(id=book_publisher_id).first()
     book_id = book_publisher.book_id
+    book_base = book_publisher.book
+    genre_names = [genre_association.genre.name for genre_association in book_base.genres]
+    authors = [ba.author for ba in book_base.authors]
+    author_names = ', '.join([f"{author.name} {author.last_name}" for author in authors if author])
     publisher_id = book_publisher.publisher_id
-    book = BookBase.query.filter_by(id=book_id).first()
+    book_base = BookBase.query.filter_by(id=book_id).first()
     publisher_name = Publisher.query.filter_by(id=publisher_id).first().name
     return {
         "user_edition_id": user_edition.id,
-        "title": book.name,
+        "title": book_base.name,
         "publisher_name": publisher_name,
+        "genres": genre_names,
+        "authors": author_names,
         "language": language,
         "date": book_edition.release_date,
         "user_rating": user_rating,
@@ -265,3 +244,8 @@ def get_edition_info(user_edition: UserEdition, review_flag=True):
         "book_rating": book_edition.rating,
         "cover": get_presigned_url(f"covers/{book_edition.cover_path}")
     }
+
+
+def get_user_edition_by_id(user_edition_id):
+    return UserEdition.query.filter_by(id=user_edition_id).first()
+

@@ -1,17 +1,19 @@
 from hashlib import md5
 
-from flask import flash, redirect, render_template, session, url_for
+from flask import Request, flash, redirect, render_template, session, url_for
 from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_wtf import FlaskForm
 from sqlalchemy.orm import joinedload
 from wtforms import StringField, SubmitField
 
-from models import (Author, BookBase, BookBaseGenre, BookEdition,
-                    BookPublisher, BooksAuthor, Genre, Language, Publisher,
-                    Review, User, UserDescription, UserEdition, book_details,
-                    get_user_books, most_rating_editions, get_stats, get_edition_info, Status, Bookmark, BookStatus)
 from bookmust.utils.s3 import get_presigned_url
+from models import (Author, BookBase, BookBaseGenre, BookEdition, Bookmark,
+                    BookPublisher, BooksAuthor, BookStatus, Genre, Language,
+                    Publisher, Review, Status, User, UserDescription,
+                    UserEdition, book_details, get_edition_info,
+                    get_user_books, get_user_edition_by_id,
+                    most_rating_editions)
 
 
 class AuthAdminIndexView(AdminIndexView):
@@ -58,7 +60,7 @@ def index_view():
 
 
 def stats_view():
-    return render_template('stats.html', books=get_stats(session["user_id"]))
+    return render_template('stats.html', books=get_user_books(session["user_id"]))
 
 
 def activate_admin_views(admin, db):
@@ -131,7 +133,7 @@ def account_view(request):
     if "user_id" in session:
         if session['user_id'] == 'admin':
             return redirect('/admin')
-        return render_template('account.html', books=get_user_books(session['user_id']))
+        return render_template('account.html', books=get_user_books(session['user_id'], review_flag=False))
     return redirect(url_for('index'))
 
 
@@ -189,7 +191,7 @@ def search_results(query, db):
 
 
 def add_to_collection(edition_id, db):
-    user_id = session['user_id']  # Получите ID пользователя из сессии или аутентификации
+    user_id = session['user_id']
     existing_entry = UserEdition.query.filter_by(user_id=user_id, edition_id=edition_id).first()
     if not existing_entry:
         new_entry = UserEdition(user_id=user_id, edition_id=edition_id)
@@ -202,6 +204,8 @@ def add_to_collection(edition_id, db):
 
 
 def detailed_page_view(user_edition):
+    if isinstance(user_edition, Request):
+        user_edition = get_user_edition_by_id(user_edition.form.get('user_edition_id'))
     book_info = get_edition_info(user_edition, review_flag=False)
     book_info["description"] = "Это описание книги если что"
     statuses = Status.query.all()
