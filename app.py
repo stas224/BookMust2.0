@@ -50,6 +50,8 @@ def login():
 
 @app.route('/logout')
 def logout():
+    if cache.has('index_page'):
+        cache.delete('index_page')
     return logout_view()
 
 
@@ -87,11 +89,15 @@ def stats():
 
 @app.route('/detailed-description', methods=['POST'])
 def detailed_page_with_adding():
+    if cache.has('index_page'):
+        cache.delete('index_page')
     return add_book_account_view(request, db)
 
 
 @app.route('/detailed-description-update', methods=['POST'])
 def detailed_page_with_update():
+    if cache.has('index_page'):
+        cache.delete('index_page')
     return detailed_page_view(request)
 
 
