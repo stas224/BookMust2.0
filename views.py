@@ -14,7 +14,7 @@ from models import (Author, BookBase, BookBaseGenre, BookEdition, Bookmark,
                     Publisher, Review, Status, User, UserDescription,
                     UserEdition, book_details, get_edition_info,
                     get_user_books, get_user_edition_by_id,
-                    most_rating_editions)
+                    most_rating_editions, Role, UserRole)
 
 
 class AuthAdminIndexView(AdminIndexView):
@@ -111,27 +111,29 @@ def after_registration_view():
     return render_template('after_registration.html', users=all_users, total=len(all_users))
 
 
-def login_view(request):
+def login_view(request, db):
     if request.method == 'GET':
         return render_template('login.html')
 
     email = request.form['email']
     password = request.form['password']
 
-    if email == 'admin@admin.ru' and password == 'admin':
-        session['user_id'] = 'admin'
-        session['login'] = True
-        session['name'] = 'admin'
-        return redirect(url_for('index'))
-
-    user = UserDescription.query.filter_by(email=email, password=md5(password.encode()).hexdigest()).first()
-    if user:
-        session['user_id'] = user.id
-        session['login'] = True
-        session['name'] = user.user.first_name
-        return redirect(url_for('index'))
-    else:
+    user = UserDescription.query.filter_by(email=email, password=md5(password.encode()).hexdigest()).all()
+    if not user:
         return make_response("Неправильные данные")
+    user = user[0]
+    role = UserRole.query.filter_by(user_id=user.id).all()
+    if role:
+        role_id = role[0].role_id
+        role = Role.query.filter_by(id=role_id).first().role
+    else:
+        role = 'user'
+
+    session['user_id'] = user.id
+    session['login'] = True
+    session['name'] = user.user.first_name
+    session['role'] = role
+    return redirect(url_for('index'))
 
 
 def logout_view():

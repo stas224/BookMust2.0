@@ -37,27 +37,26 @@
             <ul class="navbar-nav">
 
                 {% if session['login'] %}
-                    {% if session['user_id'] in ('admin', 'moderator') %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/pool-add-book">Добавить книгу</a>
-                    </li>
-                    {% else %}
+                    {% if session['role'] in ('Admin', 'Moderator') %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/search-and-add">Найти книгу</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Подборки</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/stats">Статистика</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/collection">Моя коллекция</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="/account">Личный кабинет</a>
+                            <a class="nav-link" href="/pool-add-book">Добавить книгу</a>
                         </li>
                     {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search-and-add">Найти книгу</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Подборки</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/stats">Статистика</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/collection">Моя коллекция</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="/account">Личный кабинет</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/logout">Выйти</a>
                     </li>

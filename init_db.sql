@@ -295,8 +295,8 @@ create table user_description(
 INSERT INTO user_description (email, password, join_date, bio, country_id, user_id, icon_url)
 VALUES
     ('1@1.1', MD5('1'), '2023-01-01', 'Bio for User 1', 1, 1, '1.png'),
-    ('user2@example.com', MD5('password2'), '2023-02-02', 'Bio for User 2', 2, 2, '2.png'),
-    ('user3@example.com', MD5('password3'), '2023-03-03', 'Bio for User 3', 3, 3, '3.png'),
+    ('2@2.2', MD5('2'), '2023-02-02', 'Bio for User 2', 2, 2, '2.png'),
+    ('3@3.3', MD5('3'), '2023-03-03', 'Bio for User 3', 3, 3, '3.png'),
     ('user4@example.com', MD5('password4'), '2023-04-04', 'Bio for User 4', 4, 4, '4.png'),
     ('user5@example.com', MD5('password5'), '2023-05-05', 'Bio for User 5', 5, 5, '5.png'),
     ('user6@example.com', MD5('password6'), '2023-06-06', 'Bio for User 6', 6, 6, '6.png'),
@@ -353,18 +353,21 @@ values
     (2, 6),
     (9, 7);
 
-create table transactions(
+create table roles(
     id serial primary key,
-    type varchar(16),
-    table_name varchar(32),
-    record_id int
+    role varchar(32)
 );
-insert into transactions (type, table_name, record_id)
+insert into roles (role)
 values
-    ('inserted', 'book_status', 1),
-    ('inserted', 'book_status', 2),
-    ('inserted', 'book_status', 3),
-    ('inserted', 'book_status', 4),
-    ('inserted', 'book_status', 5),
-    ('inserted', 'book_status', 6),
-    ('inserted', 'book_status', 7);
+    ('Admin'),
+    ('Moderator');
+
+create table users_roles(
+    id serial primary key,
+    user_id int references users(id),
+    role_id int references roles(id)
+);
+insert into users_roles (user_id, role_id)
+values
+    (1, 1),
+    (2, 2);

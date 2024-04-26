@@ -38,7 +38,7 @@ def after_registration():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    return login_view(request)
+    return login_view(request, db)
 
 
 @app.route('/logout')

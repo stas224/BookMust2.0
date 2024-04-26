@@ -156,12 +156,19 @@ class BookStatus(db.Model):
     status_id = db.Column(db.Integer, ForeignKey('status.id'))
 
 
-class Transaction(db.Model):
-    __tablename__ = 'transactions'
+class Role(db.Model):
+    __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(16))
-    table_name = db.Column(db.String(32))
-    record_id = db.Column(db.Integer)
+    role = db.Column(db.String(32))
+
+
+class UserRole(db.Model):
+    __tablename__ = 'users_roles'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'))
+    role_id = db.Column(db.Integer, ForeignKey('roles.id'))
+    user = relationship("User", backref="users")
+    roles = relationship("Role", backref="roles")
 
 
 def book_details():
