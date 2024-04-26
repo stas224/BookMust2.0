@@ -35,10 +35,12 @@
                                 Book is not rated yet ( ´•︵•` )
                             {% endif %}
                         </p>
-                        <form action="{{ url_for('search_and_add') }}" method="post">
-                            <input type="hidden" name="edition_id" value="{{ edition.id }}">
-                            <button type="submit" class="btn btn-primary">Add to Collection</button>
-                        </form>
+                        {% if session['user_id'] not in ('admin', 'moderator') %}
+                            <form action="{{ url_for('search_and_add') }}" method="post">
+                                <input type="hidden" name="edition_id" value="{{ edition.id }}">
+                                <button type="submit" class="btn btn-primary">Add to Collection</button>
+                            </form>
+                        {%  endif %}
                     </div>
                 </div>
             </div>

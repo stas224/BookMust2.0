@@ -86,6 +86,9 @@ def register_view(request, db):
     email = request.form['email']
     password = request.form['password']
 
+    exist = UserDescription.query.filter_by(email=email).all()
+    if exist:
+        return 'Такой уже есть, ссоре'
     new_user = User(first_name=first_name, last_name=last_name)
     db.session.add(new_user)
     db.session.commit()
@@ -143,6 +146,7 @@ def collection_view():
         return render_template('collection.html', books=get_user_books(session['user_id'], review_flag=False))
     return redirect(url_for('index'))
 
+
 def account_view():
     if 'user_id' in session:
         if session['user_id'] == "admin":
@@ -159,6 +163,7 @@ def account_view():
         user_d.last_name = user.last_name
         return render_template('account.html', user=user_d)
     return redirect(url_for('index'))
+
 
 class SearchForm(FlaskForm):
     query = StringField('')
@@ -298,6 +303,7 @@ def change_profile_view(request, db):
     user_d.bio = request.form['bio']
     db.session.commit()
     return redirect(url_for('account'))
+
 
 def pool_add_book_view(request, db):
     if request.method == 'GET':
