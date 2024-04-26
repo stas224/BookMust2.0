@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>{{ 'Edit' if book_id else 'Add' }} Book</h2>
+        <form action="{{ url_for('submit_book_form', book_id=book_id if book_id else None) }}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="image" class="form-label">Book Image:</label>
+                <input type="file" class="form-control" id="image" name="image">
+            </div>
+            <div class="mb-3">
+                <label for="isbn" class="form-label">ISBN:</label>
+                <input type="text" class="form-control" id="isbn" name="isbn">
+            </div>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="author" class="form-label">Author:</label>
+                <input type="text" class="form-control" id="author" name="author" required>
+            </div>
+            <div class="mb-3">
+                <label for="genre" class="form-label">Genre:</label>
+                <input type="text" class="form-control" id="genre" name="genre" required>
+            </div>
+            <div class="mb-3">
+                <label for="publisher" class="form-label">Publisher:</label>
+                <select class="form-select" id="publisher" name="publisher">
+                    <option value="1">Publisher A</option>
+                    <option value="2">Publisher B</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="release_date" class="form-label">Release Date:</label>
+                <input type="date" class="form-control" id="release_date" name="release_date">
+            </div>
+            <div class="mb-3">
+                <label for="publish_date" class="form-label">Publish Date:</label>
+                <input type="date" class="form-control" id="publish_date" name="publish_date">
+            </div>
+            <div class="mb-3">
+                <label for="language" class="form-label">Language:</label>
+                <select class="form-select" id="language" name="language">
+                    <option value="1">English</option>
+                    <option value="2">French</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}
