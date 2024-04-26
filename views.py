@@ -143,7 +143,12 @@ def account_view():
             return redirect('/admin')
         user_d = UserDescription.query.filter_by(user_id=session['user_id']).first()
         user = User.query.filter_by(id=session['user_id']).first()
-        user_d.icon_url = get_presigned_url(f"icons/{user_d.icon_url}")
+
+        try:
+            get_s3().get_object(Bucket=bucket_name, Key=f"icons/{user_d.icon_url}")
+            user_d.icon_url = get_presigned_url(f"icons/{user_d.icon_url}")
+        except:
+            user_d.icon_url = get_presigned_url(f"icons/default.png")
         user_d.first_name = user.first_name
         user_d.last_name = user.last_name
         return render_template('account.html', user=user_d)
