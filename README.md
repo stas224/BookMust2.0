@@ -6,6 +6,7 @@ python3 -m venv venv
 source venv/bin/activate 
 pip install -r requirements.txt
 /usr/bin/bash ./postgres_init.sh
+/usr/bin/bash ./redis_init.sh
 localstack start --host
 ```
 ## todo-list:

@@ -1,14 +1,15 @@
 import datetime
 from hashlib import md5
 
-from flask import Request, make_response, redirect, render_template, session, url_for
+from flask import (Request, make_response, redirect, render_template, session,
+                   url_for)
 from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_wtf import FlaskForm
 from sqlalchemy.orm import joinedload
 from wtforms import StringField, SubmitField
 
-from bookmust.utils.s3 import get_presigned_url, get_s3, bucket_name
+from bookmust.utils.s3 import bucket_name, get_presigned_url, get_s3
 from models import (Author, BookBase, BookBaseGenre, BookEdition, Bookmark,
                     BookPublisher, BooksAuthor, BookStatus, Genre, Language,
                     Publisher, Review, Status, User, UserDescription,
@@ -172,22 +173,31 @@ class SearchForm(FlaskForm):
     submit = SubmitField('Поиск')
 
 
-def search_and_add_view(request, db):
+def search_and_add_view(request, db, cache):
     form = SearchForm()
     results = []
     message = text = ""
 
     if form.validate_on_submit() and 'query' in request.form:
+
         query = form.query.data
+        rendered_template = cache.get(query)
+        if rendered_template:
+            return rendered_template
+
         results = search_results(query, db)
         if not results:
             text = "Ничего не найдено (╥﹏╥)"
 
     elif 'edition_id' in request.form:
-        # Добавление книги в коллекцию
         return add_to_collection(request.form['edition_id'], db)
 
-    return render_template('search.html', form=form, results=results, message=message, text=text)
+    rendered_template = render_template('search.html', form=form, results=results, message=message, text=text)
+
+    if form.validate_on_submit() and 'query' in request.form:
+        cache.set(form.query.data, rendered_template, timeout=600)
+
+    return rendered_template
 
 
 def search_results(query, db):
