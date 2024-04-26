@@ -7,7 +7,7 @@ from views import (AuthAdminIndexView, collection_view, activate_admin_views,
                    add_book_account_view, after_registration_view,
                    delete_user_edition_view, detailed_page_view, index_view,
                    login_view, logout_view, register_view, search_and_add_view,
-                   show_books_view, stats_view, top_books_view, account_view)
+                   show_books_view, stats_view, top_books_view, account_view, change_profile_view)
 
 # configure app
 app = Flask(__name__)
@@ -89,6 +89,11 @@ def detailed_page_with_update():
 @app.route('/detailed-description-delete', methods=['POST'])
 def delete_user_edition():
     return delete_user_edition_view(request, db)
+
+
+@app.route('/change-profile', methods=['POST'])
+def change_profile():
+    return change_profile_view(request, db)
 
 
 fill_s3_if_not_filled()

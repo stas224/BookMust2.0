@@ -7,7 +7,7 @@ from flask_wtf import FlaskForm
 from sqlalchemy.orm import joinedload
 from wtforms import StringField, SubmitField
 
-from bookmust.utils.s3 import get_presigned_url
+from bookmust.utils.s3 import get_presigned_url, get_s3, bucket_name
 from models import (Author, BookBase, BookBaseGenre, BookEdition, Bookmark,
                     BookPublisher, BooksAuthor, BookStatus, Genre, Language,
                     Publisher, Review, Status, User, UserDescription,
@@ -270,4 +270,17 @@ def delete_user_edition_view(request, db):
     except Exception as e:
         db.session.rollback()
 
+    return redirect(url_for('account'))
+
+
+def change_profile_view(request, db):
+    user_id = session['user_id']
+    user_d = UserDescription.query.filter_by(user_id=user_id).first()
+    if request.files['icon'].filename:
+        get_s3().upload_fileobj(request.files['icon'], bucket_name, f"icons/{user_d.icon_url}")
+    user = User.query.filter_by(id=user_id).first()
+    user.first_name = request.form['first_name']
+    user.last_name = request.form['last_name']
+    user_d.bio = request.form['bio']
+    db.session.commit()
     return redirect(url_for('account'))
