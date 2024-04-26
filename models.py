@@ -223,7 +223,7 @@ def get_edition_info(user_edition: UserEdition, review_flag=True):
     book_publisher = BookPublisher.query.filter_by(id=book_publisher_id).first()
     book_id = book_publisher.book_id
     book_base = book_publisher.book
-    genre_names = [genre_association.genre.name for genre_association in book_base.genres]
+    genre_names = ','.join([genre_association.genre.name for genre_association in book_base.genres])
     authors = [ba.author for ba in book_base.authors]
     author_names = ', '.join([f"{author.name} {author.last_name}" for author in authors if author])
     publisher_id = book_publisher.publisher_id

@@ -5,9 +5,9 @@ from bookmust.utils.s3 import fill_s3_if_not_filled
 from models import db
 from views import (AuthAdminIndexView, account_view, activate_admin_views,
                    add_book_account_view, after_registration_view,
-                   detailed_page_view, index_view, login_view, logout_view,
-                   register_view, search_and_add_view, show_books_view,
-                   stats_view, top_books_view)
+                   delete_user_edition_view, detailed_page_view, index_view,
+                   login_view, logout_view, register_view, search_and_add_view,
+                   show_books_view, stats_view, top_books_view)
 
 # configure app
 app = Flask(__name__)
@@ -81,6 +81,11 @@ def detailed_page_with_adding():
 @app.route('/detailed-description-update', methods=['POST'])
 def detailed_page_with_update():
     return detailed_page_view(request)
+
+
+@app.route('/detailed-description-delete', methods=['POST'])
+def delete_user_edition():
+    return delete_user_edition_view(request, db)
 
 
 fill_s3_if_not_filled()

@@ -63,30 +63,47 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <p>Жанр: {{ book.genres }}</p>
-                                    <p>Автор: {{ book.author }}</p>
+                                    <p>Автор: {{ book.authors }}</p>
                                     <p>Издатель: {{ book.publisher_name }}</p>
                                     {% if book.book_rating %}
                                         <p>Рейтинг на сайте: {{ book.book_rating | round(2) }}</p>
+                                    {% else %}
+                                        <br>
                                     {% endif %}
 
                                 </div>
                                 <div class="col-md-6">
                                     {% if book.user_status %}
                                         <p>Статус чтения: {{ book.user_status }}</p>
+                                    {% else %}
+                                        <br>
                                     {% endif %}
                                     {% if book.user_bookmark %}
                                         <p>Закладка на {{ book.user_bookmark }} странице</p>
+                                    {% else %}
+                                        <br>
                                     {% endif %}
                                     {% if book.user_rating %}
                                         <p>Моя оценка: {{ book.user_rating }}</p>
+                                    {% else %}
+                                        <br>
                                     {% endif %}
                                     {% if book.user_review %}
                                         <p>Мой отзыв: {{ book.user_review }}</p>
+                                    {% else %}
+                                        <br>
                                     {% endif %}
-                                    <form action="/detailed-description-update" method="post">
-                                        <input type="hidden" name="user_edition_id" value="{{ book.user_edition_id }}">
-                                        <button type="submit" class="btn btn-primary mt-2">Редактировать данные</button>
-                                    </form>
+                                    <div class="d-flex justify-content-start">
+                                        <form action="/edit" method="post" class="mr-2">
+                                            <input type="hidden" name="user_edition_id" value="{{ book.user_edition_id }}">
+                                            <button type="submit" class="btn btn-primary">Редактировать данные</button>
+                                        </form>
+
+                                        <form action="/detailed-description-delete" method="post" onsubmit="return confirm('Ты точно хочешь ее удалить?');">
+                                            <input type="hidden" name="user_edition_id" value="{{ book.user_edition_id }}">
+                                            <button type="submit" class="btn btn-dark">Удалить</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

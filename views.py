@@ -248,3 +248,18 @@ def add_book_account_view(request, db):
 
     db.session.commit()
     return redirect(url_for('account'))
+
+
+def delete_user_edition_view(request, db):
+    user_edition_id = request.form['user_edition_id']
+
+    try:
+        Bookmark.query.filter_by(user_edition_id=user_edition_id).delete()
+        Review.query.filter_by(user_edition_id=user_edition_id).delete()
+        BookStatus.query.filter_by(user_edition_id=user_edition_id).delete()
+        UserEdition.query.filter_by(id=user_edition_id).delete()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+
+    return redirect(url_for('account'))
