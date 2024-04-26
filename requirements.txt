@@ -3,6 +3,7 @@ Flask
 Flask-SQLAlchemy
 flask-wtf
 flask_admin
+flask_caching
 Jinja2
 psycopg2-binary
 SQLAlchemy

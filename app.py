@@ -1,19 +1,25 @@
 from flask import Flask, request
 from flask_admin import Admin
+from flask_caching import Cache
 
 from bookmust.utils.s3 import fill_s3_if_not_filled
 from models import db
-from views import (AuthAdminIndexView, collection_view, activate_admin_views,
+from views import (AuthAdminIndexView, account_view, activate_admin_views,
                    add_book_account_view, after_registration_view,
+                   change_profile_view, collection_view,
                    delete_user_edition_view, detailed_page_view, index_view,
-                   login_view, logout_view, register_view, search_and_add_view,
-                   show_books_view, stats_view, top_books_view, account_view, change_profile_view, pool_add_book_view)
+                   login_view, logout_view, pool_add_book_view, register_view,
+                   search_and_add_view, show_books_view, stats_view,
+                   top_books_view)
 
 # configure app
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myuser:mysecretpassword@localhost/mydb'
+app.config['CACHE_TYPE'] = 'redis'
+app.config['CACHE_REDIS_URL'] = "redis://localhost:6379/0"
 db.init_app(app)
+cache = Cache(app)
 
 # configure admin panel
 admin = Admin(app, name='BookMust AdminPanel', template_mode='bootstrap3', index_view=AuthAdminIndexView())
@@ -21,6 +27,7 @@ activate_admin_views(admin, db)
 
 
 @app.route('/')
+@cache.cached(timeout=600, key_prefix='index_page')
 def index():
     return index_view()
 
@@ -70,7 +77,7 @@ def account():
 
 @app.route('/search-and-add', methods=['GET', 'POST'])
 def search_and_add():
-    return search_and_add_view(request, db)
+    return search_and_add_view(request, db, cache)
 
 
 @app.route('/stats')
@@ -95,6 +102,8 @@ def delete_user_edition():
 
 @app.route('/pool-add-book', methods=['GET', 'POST'])
 def pool_add_book():
+    if request.method == 'POST':
+        cache.clear()
     return pool_add_book_view(request, db)
 
 
