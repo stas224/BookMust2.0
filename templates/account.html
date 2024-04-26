@@ -1,16 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 40px;
-            color: #333;
-        }
+{% extends "base.html" %}
+
+{% block style %}
         form {
             background: white;
             max-width: 600px;
@@ -47,17 +37,17 @@
             background-color: #4a54e1;
         }
         img {
-            margin-top: 20px;
             width: 100px;
             height: 100px;
             border-radius: 50%;
             object-fit: cover;
         }
-    </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
     <h1 style="text-align: center;">Ваш профиль</h1>
     <form action="/change-profile" method="post" enctype="multipart/form-data">
+        <img src="{{ user.icon_url }}" alt="Аватарка">
+
         <label for="first_name">Имя</label>
         <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}">
 
@@ -67,13 +57,10 @@
         <label for="bio">Bio</label>
         <textarea id="bio" name="bio">{{ user.bio }}</textarea>
 
+        <p>Join Date: {{ user.join_date.strftime('%Y-%m-%d') }}</p>
         <label for="icon">Загрузить новую аватарку</label>
         <input type="file" id="icon" name="icon">
-        <img src="{{ user.icon_url }}" alt="Аватарка" class="img-fluid">
-
-        <p>Join Date: {{ user.join_date.strftime('%Y-%m-%d') }}</p>
 
         <button type="submit">Сохранить изменения</button>
     </form>
-</body>
-</html>
+{% endblock %}
