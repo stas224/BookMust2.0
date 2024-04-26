@@ -284,3 +284,59 @@ def change_profile_view(request, db):
     user_d.bio = request.form['bio']
     db.session.commit()
     return redirect(url_for('account'))
+
+def pool_add_book_view(request, db):
+    if request.method == 'GET':
+        publishers = Publisher.query.all()
+        publisher_names = [publisher.name for publisher in publishers]
+        genres = Genre.query.all()
+        genre_names = [genre.name for genre in genres]
+        languages = Language.query.all()
+        language_names = [language.short_name for language in languages]
+        authors = Author.query.all()
+        authors_names = [f"{author.name} {author.last_name}" for author in authors]
+
+        return render_template('add_book_in_pool.html',
+                               publishers=publisher_names,
+                               authors=authors_names,
+                               genres=genre_names,
+                               languages=language_names)
+    image = request.files['image']
+    title = request.form['title']
+    author_name = request.form['author'].split()
+    genre = request.form['genre']
+    publisher_name = request.form['publisher']
+    release_date = request.form['release_date']
+    publish_date = request.form['publish_date']
+    language_name = request.form['language']
+    isbn = request.form['isbn']
+
+    book_base = BookBase.query.filter_by(isbn=isbn).first()
+    if not book_base:
+        book_base = BookBase(name=title, isbn=isbn, write_date=publish_date)
+        db.session.add(book_base)
+        db.session.commit()
+        autor = Author.query.filter_by(name=author_name[0], last_name=author_name[1]).first()
+        book_autor = BooksAuthor(book_id=book_base.id, author_id=autor.id)
+        db.session.add(book_autor)
+        db.session.commit()
+        publisher = Publisher.query.filter_by(name=publisher_name).first()
+        book_publisher = BookPublisher(book_id=book_base.id, publisher_id=publisher.id)
+        db.session.add(book_publisher)
+        db.session.commit()
+        genre = Genre.query.filter_by(name=genre).first()
+        book_genre = BookBaseGenre(book_base_id=book_base.id, genre_id=genre.id)
+        db.session.add(book_genre)
+        db.session.commit()
+    else:
+        book_publisher = BookPublisher.query.filter_by(book_id=book_base.id).first()
+
+    language = Language.query.filter_by(short_name=language_name).first()
+    book_edition = BookEdition(book_publisher_id=book_publisher.id,
+                               release_date=release_date,
+                               language_id=language.id,
+                               url='/',)
+    db.session.add(book_edition)
+    db.session.commit()
+
+    return redirect(url_for('index'))
