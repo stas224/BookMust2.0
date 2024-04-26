@@ -2,9 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 40px;
+            color: #333;
+        }
+        form {
+            background: white;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5c67f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            margin-top: 20px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #4a54e1;
+        }
+        img {
+            margin-top: 20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
+    <h1 style="text-align: center;">Ваш профиль</h1>
+    <form action="/change-profile" method="post" enctype="multipart/form-data">
+        <label for="first_name">Имя</label>
+        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}">
 
+        <label for="second_name">Фамилия</label>
+        <input type="text" id="second_name" name="second_name" value="{{ user.last_name }}">
+
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio">{{ user.bio }}</textarea>
+
+        <label for="icon">Загрузить новую аватарку</label>
+        <input type="file" id="icon" name="icon">
+        <img src="{{ user.icon_url }}" alt="Аватарка" class="img-fluid">
+
+        <p>Join Date: {{ user.join_date.strftime('%Y-%m-%d') }}</p>
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
 </body>
 </html>

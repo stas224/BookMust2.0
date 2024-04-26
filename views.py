@@ -138,7 +138,12 @@ def account_view():
     if 'user_id' in session:
         if session['user_id'] == "admin":
             return redirect('/admin')
-        return render_template('account.html')
+        user_d = UserDescription.query.filter_by(user_id=session['user_id']).first()
+        user = User.query.filter_by(id=session['user_id']).first()
+        user_d.icon_url = get_presigned_url(f"icons/{user_d.icon_url}")
+        user_d.first_name = user.first_name
+        user_d.last_name = user.last_name
+        return render_template('account.html', user=user_d)
     return redirect(url_for('index'))
 
 class SearchForm(FlaskForm):
