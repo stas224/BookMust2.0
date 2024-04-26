@@ -10,8 +10,9 @@ from wtforms import StringField, SubmitField
 from models import (Author, BookBase, BookBaseGenre, BookEdition,
                     BookPublisher, BooksAuthor, Genre, Language, Publisher,
                     Review, User, UserDescription, UserEdition, book_details,
-                    get_user_books, most_rating_editions, get_stats, get_edition_info, Status)
+                    get_user_books, most_rating_editions, get_stats, get_edition_info, Status, Bookmark, BookStatus)
 from bookmust.utils.s3 import get_presigned_url
+
 
 class AuthAdminIndexView(AdminIndexView):
     @expose('/')
@@ -210,4 +211,36 @@ def detailed_page_view(user_edition):
 
 
 def add_book_account_view(request, db):
-    print(request)
+    form_data = request.form
+    user_edition_id = form_data.get('user_edition_id')
+    reading_status = form_data.get('reading_status') if form_data.get('reading_status') else None
+    page_number = form_data.get('page_number') if form_data.get('page_number') else None
+    rating = form_data.get('rating') if form_data.get('rating') else None
+    review = form_data.get('review') if form_data.get('review') else None
+
+    review_entry = Review.query.filter_by(user_edition_id=user_edition_id).first()
+    if review_entry:
+        review_entry.review = review if review else review_entry.review
+        review_entry.rating = rating if rating else review_entry.rating
+    else:
+        new_review = Review(user_edition_id=user_edition_id, review=review, rating=rating)
+        db.session.add(new_review)
+
+    bookmark_entry = Bookmark.query.filter_by(user_edition_id=user_edition_id).first()
+    if bookmark_entry:
+        bookmark_entry.page = page_number if page_number else bookmark_entry.page
+    else:
+        new_bookmark = Bookmark(user_edition_id=user_edition_id, page=page_number)
+        db.session.add(new_bookmark)
+
+    if reading_status:
+        book_status_entry = BookStatus.query.filter_by(user_edition_id=user_edition_id).first()
+        status_entry = Status.query.filter_by(status=reading_status).first()
+        if book_status_entry:
+            book_status_entry.status_id = status_entry.id
+        else:
+            new_status = BookStatus(user_edition_id=user_edition_id, status_id=status_entry.id)
+            db.session.add(new_status)
+
+    db.session.commit()
+    return redirect(url_for('account'))

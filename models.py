@@ -198,46 +198,21 @@ def get_user_books(user_id):
     results = []
 
     for user_edition in user_editions:
-        # Информация об отзыве
-        reviews = Review.query.filter_by(user_edition_id=user_edition.id).all()
+        edition_details = get_edition_info(user_edition, review_flag=False)
 
-        # Информация об издании
-        edition = user_edition.edition
+        book_publisher = user_edition.edition.book_publisher
+        book = book_publisher.book if book_publisher else None
+        genre_names = [genre_association.genre.name for genre_association in book.genres]
 
-        if edition:
-            # Информация об издателе и книге
-            book_publisher = edition.book_publisher
-            publisher = book_publisher.publisher if book_publisher else None
-            book = book_publisher.book if book_publisher else None
-            genre_names = [genre_association.genre.name for genre_association in book.genres]
+        if book:
+            authors = [ba.author for ba in book.authors]
+            author_names = ', '.join([f"{author.name} {author.last_name}" for author in authors if author])
+        else:
+            author_names = None
 
-            if book:
-                # Информация об авторах книги
-                authors = [ba.author for ba in book.authors]
-                author_names = ', '.join([f"{author.name} {author.last_name}" for author in authors if author])
-            else:
-                author_names = None
-
-            # Сбор данных для данного издания
-            edition_details = {
-                "name": book.name if book else "Недоступно",
-                "genres": ', '.join(genre_names),
-                "author": author_names,
-                "publisher": publisher.name if publisher else "Недоступно",
-                "site_rating": edition.rating,
-                "user_rating": None,
-                "user_review": None,
-                "image_url": get_presigned_url(f"covers/{edition.cover_path}")
-            }
-
-            # Информация об отзывах пользователя
-            if reviews:
-                # Предполагаем, что у каждого издания только один отзыв от пользователя
-                review = reviews[0]
-                edition_details["user_rating"] = review.rating
-                edition_details["user_review"] = review.review
-
-            results.append(edition_details)
+        edition_details['genres'] = ', '.join(genre_names)
+        edition_details['author'] = author_names
+        results.append(edition_details)
 
     return results
 
@@ -264,6 +239,7 @@ def get_edition_info(user_edition: UserEdition, review_flag=True):
         return
 
     bookmark = Bookmark.query.filter_by(user_edition_id=user_edition.id).first()
+    bookmark = bookmark.page if bookmark else None
     book_status = BookStatus.query.filter_by(user_edition_id=user_edition.id).first()
     status = Status.query.filter_by(id=book_status.status_id).first().status if book_status else None
 

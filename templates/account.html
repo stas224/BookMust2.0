@@ -54,32 +54,42 @@
         <div class="list-group">
             {% for book in books %}
                 <div class="list-group-item">
-                    <div class="row align-items-center">
-
+                    <div class="row align-items-start">
                         <div class="col-md-2">
                             <img src="{{ book.image_url }}" alt="Обложка" class="img-fluid">
                         </div>
-
                         <div class="col-md-10">
-                            <h3>{{ book.name }}</h3>
-                            <p>Жанр: {{ book.genres }}</p>
-                            <p>Автор: {{ book.author }}</p>
-                            <p>Издатель: {{ book.publisher }}</p>
+                            <h3>{{ book.title }}</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>Жанр: {{ book.genres }}</p>
+                                    <p>Автор: {{ book.author }}</p>
+                                    <p>Издатель: {{ book.publisher_name }}</p>
+                                    {% if book.book_rating %}
+                                        <p>Рейтинг на сайте: {{ book.book_rating | round(2) }}</p>
+                                    {% endif %}
 
-                            <div class="ratings-row">
-                                {% if book.site_rating %}
-                                    <p class="rating-item">Рейтинг на сайте: {{ book.site_rating | round(2) }}</p>
-                                {% endif %}
-                                {% if book.user_rating != None %}
-                                    <p class="rating-item">Моя оценка: {{ book.user_rating }}</p>
-                                {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if book.user_status %}
+                                        <p>Статус чтения: {{ book.user_status }}</p>
+                                    {% endif %}
+                                    {% if book.user_bookmark %}
+                                        <p>Закладка на {{ book.user_bookmark }} странице</p>
+                                    {% endif %}
+                                    {% if book.user_rating %}
+                                        <p>Моя оценка: {{ book.user_rating }}</p>
+                                    {% endif %}
+                                    {% if book.user_review %}
+                                        <p>Мой отзыв: {{ book.user_review }}</p>
+                                    {% endif %}
+                                    <form action="/detailed-description-update" method="post">
+                                        <input type="hidden" name="user_edition_id" value="{{ book.user_edition_id }}">
+                                        <button type="submit" class="btn btn-primary mt-2">Редактировать данные</button>
+                                    </form>
+                                </div>
                             </div>
-
-                            {% if book.user_review != None %}
-                                <p>Мой отзыв: {{ book.user_review }}</p>
-                            {% endif %}
                         </div>
-
                     </div>
                 </div>
             {% endfor %}
