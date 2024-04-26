@@ -35,6 +35,8 @@ def index():
 # auth
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if cache.has('index_page'):
+        cache.delete('index_page')
     return register_view(request, db)
 
 
@@ -45,6 +47,8 @@ def after_registration():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if cache.has('index_page'):
+        cache.delete('index_page')
     return login_view(request, db)
 
 
