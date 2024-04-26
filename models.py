@@ -93,6 +93,7 @@ class BookEdition(db.Model):
     url = db.Column(db.String(256))
     cover_path = db.Column(db.String(256))
     rating = db.Column(db.Numeric, default=0)
+    description = db.Column(db.String(1024))
     language = relationship("Language", backref="editions")
     book_publisher = relationship("BookPublisher", backref="editions")
 
@@ -191,12 +192,14 @@ def most_rating_editions(count=5):
                                                ).limit(count).all()
 
 
-def get_user_books(user_id, review_flag=True):
+def get_user_books(user_id, review_flag=True, None_flag=False):
     user_editions = UserEdition.query.filter_by(user_id=user_id).all()
     results = []
 
     for user_edition in user_editions:
         edition_details = get_edition_info(user_edition, review_flag=review_flag)
+        if edition_details is None and None_flag:
+            continue
         results.append(edition_details)
 
     return results
@@ -242,7 +245,8 @@ def get_edition_info(user_edition: UserEdition, review_flag=True):
         "user_bookmark": bookmark,
         "user_status": status,
         "book_rating": book_edition.rating,
-        "cover": get_presigned_url(f"covers/{book_edition.cover_path}")
+        "cover": get_presigned_url(f"covers/{book_edition.cover_path}"),
+        "description": book_edition.description
     }
 
 

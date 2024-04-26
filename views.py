@@ -60,7 +60,7 @@ def index_view():
 
 
 def stats_view():
-    return render_template('stats.html', books=get_user_books(session["user_id"]))
+    return render_template('stats.html', books=get_user_books(session["user_id"], None_flag=True))
 
 
 def activate_admin_views(admin, db):
@@ -207,7 +207,6 @@ def detailed_page_view(user_edition):
     if isinstance(user_edition, Request):
         user_edition = get_user_edition_by_id(user_edition.form.get('user_edition_id'))
     book_info = get_edition_info(user_edition, review_flag=False)
-    book_info["description"] = "Это описание книги если что"
     statuses = Status.query.all()
     book_info['statuses'] = [status.status for status in statuses]
 
