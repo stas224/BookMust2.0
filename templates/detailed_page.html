@@ -24,7 +24,7 @@
                 <select class="form-control" id="reading_status" name="reading_status">
                     <option value=''></option>
                     {% for i in book.statuses %}
-                    <option value={{ i }} {% if book.user_status ==  i %}selected{% endif %}>{{ i }}</option>
+                    <option value='{{ i }}' {% if book.user_status ==  i %}selected{% endif %}>{{ i }}</option>
                     {% endfor %}
                 </select>
             </div>

@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container mt-5">
         <h2>{{ 'Edit' if book_id else 'Add' }} Book</h2>
-        <form action="{{ url_for('submit_book_form', book_id=book_id if book_id else None) }}" method="post" enctype="multipart/form-data">
+        <form action="/pool-add-book" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="image" class="form-label">Book Image:</label>
                 <input type="file" class="form-control" id="image" name="image">
@@ -18,17 +18,26 @@
             </div>
             <div class="mb-3">
                 <label for="author" class="form-label">Author:</label>
-                <input type="text" class="form-control" id="author" name="author" required>
+                <select class="form-select" id="author" name="author">
+                    {% for author in authors %}
+                        <option value='{{ author }}'>{{ author }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="mb-3">
                 <label for="genre" class="form-label">Genre:</label>
-                <input type="text" class="form-control" id="genre" name="genre" required>
+                <select class="form-select" id="genre" name="genre">
+                    {% for genre in genres %}
+                        <option value='{{ genre }}'>{{ genre }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="mb-3">
                 <label for="publisher" class="form-label">Publisher:</label>
                 <select class="form-select" id="publisher" name="publisher">
-                    <option value="1">Publisher A</option>
-                    <option value="2">Publisher B</option>
+                    {% for publisher in publishers %}
+                        <option value='{{ publisher }}'>{{ publisher }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="mb-3">
@@ -42,8 +51,9 @@
             <div class="mb-3">
                 <label for="language" class="form-label">Language:</label>
                 <select class="form-select" id="language" name="language">
-                    <option value="1">English</option>
-                    <option value="2">French</option>
+                    {% for language in languages %}
+                        <option value='{{ language }}'>{{ language }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
