@@ -1,3 +1,4 @@
+from uuid import uuid4
 import datetime
 from hashlib import md5
 
@@ -20,13 +21,13 @@ from models import (Author, BookBase, BookBaseGenre, BookEdition, Bookmark,
 class AuthAdminIndexView(AdminIndexView):
     @expose('/')
     def index(self):
-        if 'user_id' in session and session['user_id'] == 'admin':
+        if 'role' in session and session['role'] == 'Admin':
             return super(AuthAdminIndexView, self).index()
         else:
             return redirect(url_for('login'))
 
     def is_accessible(self):
-        return 'user_id' in session and session['user_id'] == 'admin'
+        return 'role' in session and session['role'] == 'Admin'
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('login'))
@@ -34,10 +35,24 @@ class AuthAdminIndexView(AdminIndexView):
 
 class AuthAdminModelView(ModelView):
     def is_accessible(self):
-        return 'user_id' in session and session['user_id'] == 'admin'
+        return 'role' in session and session['role'] == 'Admin'
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('login'))
+
+
+class UserRoleView(AuthAdminModelView):
+    column_list = ("user_id", "role_id")
+    form_columns = ("user_id", "role_id")
+    can_view_details = True
+    column_details_list = ("user_id", "role_id")
+
+
+class UserView(AuthAdminModelView):
+    column_list = ("id", "first_name", "last_name")
+    form_columns = ("id", "first_name", "last_name")
+    can_view_details = True
+    column_details_list = ("id", "first_name", "last_name")
 
 
 class BookBaseView(AuthAdminModelView):
@@ -72,7 +87,9 @@ def stats_view():
 
 def activate_admin_views(admin, db):
     admin.add_view(BookBaseView(BookBase, db.session))
-    for table in [User, UserDescription, Author, Genre, Publisher, Language,
+    admin.add_view(UserView(User, db.session))
+    admin.add_view(UserRoleView(UserRole, db.session))
+    for table in [UserDescription, Author, Genre, Publisher, Language,
                   BookEdition, Review]:
         admin.add_view(AuthAdminModelView(table, db.session))
 
@@ -127,7 +144,7 @@ def login_view(request, db):
         role_id = role[0].role_id
         role = Role.query.filter_by(id=role_id).first().role
     else:
-        role = 'user'
+        role = 'User'
 
     session['user_id'] = user.id
     session['login'] = True
@@ -151,8 +168,6 @@ def collection_view():
 
 def account_view():
     if 'user_id' in session:
-        if session['user_id'] == "admin":
-            return redirect('/admin')
         user_d = UserDescription.query.filter_by(user_id=session['user_id']).first()
         user = User.query.filter_by(id=session['user_id']).first()
 
@@ -291,7 +306,7 @@ def delete_user_edition_view(request, db):
     except Exception as e:
         db.session.rollback()
 
-    return redirect(url_for('account'))
+    return redirect(url_for('collection'))
 
 
 def change_profile_view(request, db):
@@ -308,6 +323,9 @@ def change_profile_view(request, db):
 
 
 def pool_add_book_view(request, db):
+    if session['role'] == 'User':
+        redirect(url_for('index'))
+
     if request.method == 'GET':
         publishers = Publisher.query.all()
         publisher_names = [publisher.name for publisher in publishers]
@@ -354,10 +372,12 @@ def pool_add_book_view(request, db):
         book_publisher = BookPublisher.query.filter_by(book_id=book_base.id).first()
 
     language = Language.query.filter_by(short_name=language_name).first()
+    uuid = uuid4().hex
+    get_s3().upload_fileobj(image, bucket_name, f"covers/{uuid}.png")
     book_edition = BookEdition(book_publisher_id=book_publisher.id,
                                release_date=release_date,
                                language_id=language.id,
-                               url='/',)
+                               cover_path=f"{uuid}.png",)
     db.session.add(book_edition)
     db.session.commit()
 
