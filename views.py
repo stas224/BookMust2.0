@@ -158,6 +158,7 @@ def logout_view():
     session.pop('login', None)
     session.pop('user_id', None)
     session.pop('name', None)
+    session.pop('role', None)
     return redirect(url_for('index'))
 
 

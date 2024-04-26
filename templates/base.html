@@ -36,7 +36,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
 
-                {% if session['login'] %}
+                {% if and session['login'] %}
                     {% if session['role'] == 'Admin' %}
                         <li class="nav-item">
                             <a class="nav-link" href="/admin">Просмотр таблиц</a>
