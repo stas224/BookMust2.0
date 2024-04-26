@@ -57,7 +57,13 @@ def top_books_view():
 
 
 def index_view():
-    return render_template('index.html', books=most_rating_editions())
+    return render_template(
+        'index.html',
+        books=most_rating_editions(),
+        publishers=len(Publisher.query.all()),
+        users=len(User.query.all()),
+        bbooks=len(BookEdition.query.all())
+    )
 
 
 def stats_view():
