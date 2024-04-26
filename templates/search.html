@@ -27,12 +27,12 @@
                             <img src="{{ edition.cover }}" alt="{{ edition.book_publisher.book.name }} cover" class="book-cover" >
                         </div>
                         <p class="card-text">
-                            Genre: {{ edition.book_publisher.book.genres[0].genre.name }}
-                        <br> Publisher: {{ edition.book_publisher.publisher.name }} <br>
+                            Жанр: {{ edition.book_publisher.book.genres[0].genre.name }}
+                        <br> Издатель: {{ edition.book_publisher.publisher.name }} <br>
                             {% if edition.rating %}
-                                Rating: {{ edition.rating | round(2) }}
+                                Рейтинг: {{ edition.rating | round(2) }}
                             {% else %}
-                                Book is not rated yet ( ´•︵•` )
+                                Книга еще не оценена ( ´•︵•` )
                             {% endif %}
                         </p>
                         <form action="{{ url_for('search_and_add') }}" method="post">

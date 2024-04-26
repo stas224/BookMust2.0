@@ -60,7 +60,7 @@
         {% for book in books %}
             <div class="book-container">
                 <div class="book-cover-container">
-                    <img src="{{ book.cover }}" alt="{{ book.title }} cover" class="book-cover" title="Publisher: {{ book.publisher_name }}, Language: {{ book.language }}, Date: {{ book.date }}">
+                    <img src="{{ book.cover }}" alt="обложка {{ book.title }}" class="book-cover" title="Publisher: {{ book.publisher_name }}, Language: {{ book.language }}, Date: {{ book.date }}">
                 </div>
                 <div class="book-details">
                     <div class="text-container">
@@ -83,7 +83,7 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['User Rating', 'Book Rating'],
+                labels: ['Ваша оценка', 'Средний рейтинг'],
                 datasets: [{
                     label: book.title,
                     data: [book.user_rating, book.book_rating],
