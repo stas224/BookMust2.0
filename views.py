@@ -129,13 +129,17 @@ def logout_view():
     return redirect(url_for('index'))
 
 
-def account_view(request):
+def collection_view(request):
     if "user_id" in session:
-        if session['user_id'] == 'admin':
-            return redirect('/admin')
-        return render_template('account.html', books=get_user_books(session['user_id'], review_flag=False))
+        return render_template('collection.html', books=get_user_books(session['user_id'], review_flag=False))
     return redirect(url_for('index'))
 
+def account_view():
+    if 'user_id' in session:
+        if session['user_id'] == "admin":
+            return redirect('/admin')
+        return render_template('account.html')
+    return redirect(url_for('index'))
 
 class SearchForm(FlaskForm):
     query = StringField('')

@@ -1,0 +1,115 @@
+{% extends "index.html" %}
+
+{% block style %}
+    body {
+        background-image: url('https://delmoscow.ru/resources/news/6912cc9c.jpg');
+        background-position: top left;
+        background-size: 50px50px;
+    }
+
+    h3 {
+        font-family: 'Roboto';
+        font-size: 30px;
+    }
+
+    h1 {
+        font-family: "Lobster"
+    }
+
+    .list-group-item {
+        margin-bottom: 10px;
+    }
+
+    .ratings-row {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+    }
+
+    .rating-item {
+        margin-right: 15px;
+    }
+
+    [class*="col-md-10"] {
+        border: 1px solid blue;
+        margin-top: -1px;
+        margin-left: -1px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+
+        <div class="list-group-item" style="text-align: center;">
+            <h1>Моя коллекция книг на BookMust</h1>
+        </div>
+
+        <div class="list-group">
+            {% for book in books %}
+                <div class="list-group-item">
+                    <div class="row align-items-start">
+                        <div class="col-md-2">
+                            <img src="{{ book.cover }}" alt="Обложка" class="img-fluid">
+                        </div>
+                        <div class="col-md-10">
+                            <h3>{{ book.title }}</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>Жанр: {{ book.genres }}</p>
+                                    <p>Автор: {{ book.authors }}</p>
+                                    <p>Издатель: {{ book.publisher_name }}</p>
+                                    {% if book.book_rating %}
+                                        <p>Рейтинг на сайте: {{ book.book_rating | round(2) }}</p>
+                                    {% else %}
+                                        <br>
+                                    {% endif %}
+
+                                </div>
+                                <div class="col-md-6">
+                                    {% if book.user_status %}
+                                        <p>Статус чтения: {{ book.user_status }}</p>
+                                    {% else %}
+                                        <br>
+                                    {% endif %}
+                                    {% if book.user_bookmark %}
+                                        <p>Закладка на {{ book.user_bookmark }} странице</p>
+                                    {% else %}
+                                        <br>
+                                    {% endif %}
+                                    {% if book.user_rating %}
+                                        <p>Моя оценка: {{ book.user_rating }}</p>
+                                    {% else %}
+                                        <br>
+                                    {% endif %}
+                                    {% if book.user_review %}
+                                        <p>Мой отзыв: {{ book.user_review }}</p>
+                                    {% else %}
+                                        <br>
+                                    {% endif %}
+                                    <div class="d-flex justify-content-start">
+                                        <form action="/detailed-description-update" method="post" class="mr-2">
+                                            <input type="hidden" name="user_edition_id" value="{{ book.user_edition_id }}">
+                                            <button type="submit" class="btn btn-primary">Редактировать данные</button>
+                                        </form>
+
+                                        <form action="/detailed-description-delete" method="post" onsubmit="return confirm('Ты точно хочешь ее удалить?');">
+                                            <input type="hidden" name="user_edition_id" value="{{ book.user_edition_id }}">
+                                            <button type="submit" class="btn btn-dark">Удалить</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
