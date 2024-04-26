@@ -6,7 +6,7 @@
     <form method="post" class="mb-4 d-flex align-items-center">
         {{ form.hidden_tag() }}
         <div class="form-group mb-0 mr-2 flex-grow-1">
-            {{ form.query.label(class="form-label sr-only") }}  <!-- скрытый label для доступности -->
+            {{ form.query.label(class="form-label sr-only") }}
             {{ form.query(class="form-control", size=20, placeholder="Anna ...") }}
         </div>
         {{ form.submit(class="btn btn-primary") }}

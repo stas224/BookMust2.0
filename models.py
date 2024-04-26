@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-
 from bookmust.utils.s3 import get_presigned_url
 
 db = SQLAlchemy()
@@ -248,26 +247,45 @@ def get_stats(user_id):
     user_editions = UserEdition.query.filter_by(user_id=user_id).all()
 
     for user_edition in user_editions:
-        reviews = Review.query.filter_by(user_edition_id=user_edition.id).all()
-        if not reviews:
-            continue
-        user_rating = reviews[0].rating
-        edition_id = user_edition.edition_id
-        book_edition = BookEdition.query.filter_by(id=edition_id).all()[0]
-        language = Language.query.filter_by(id=book_edition.language_id).all()[0].short_name
-        book_publisher_id = book_edition.book_publisher_id
-        book_publisher = BookPublisher.query.filter_by(id=book_publisher_id).all()[0]
-        book_id = book_publisher.book_id
-        publisher_id = book_publisher.publisher_id
-        book = BookBase.query.filter_by(id=book_id).all()[0]
-        publisher_name = Publisher.query.filter_by(id=publisher_id).all()[0].name
-        data.append({
-            "title": book.name,
-            "publisher_name": publisher_name,
-            "language": language,
-            "date": book_edition.release_date,
-            "user_rating": user_rating,
-            "book_rating": book_edition.rating,
-            "cover": get_presigned_url(f"covers/{book_edition.cover_path}")
-        })
+        edition_info = get_edition_info(user_edition)
+        if edition_info:
+            data.append(get_edition_info(user_edition))
+
     return data
+
+
+def get_edition_info(user_edition: UserEdition, review_flag=True):
+    user_rating = user_review = None
+    review = Review.query.filter_by(user_edition_id=user_edition.id).first()
+    if review:
+        user_rating = review.rating
+        user_review = review.review
+    elif review_flag:
+        return
+
+    bookmark = Bookmark.query.filter_by(user_edition_id=user_edition.id).first()
+    book_status = BookStatus.query.filter_by(user_edition_id=user_edition.id).first()
+    status = Status.query.filter_by(id=book_status.status_id).first().status if book_status else None
+
+    edition_id = user_edition.edition_id
+    book_edition = BookEdition.query.filter_by(id=edition_id).first()
+    language = Language.query.filter_by(id=book_edition.language_id).first().short_name
+    book_publisher_id = book_edition.book_publisher_id
+    book_publisher = BookPublisher.query.filter_by(id=book_publisher_id).first()
+    book_id = book_publisher.book_id
+    publisher_id = book_publisher.publisher_id
+    book = BookBase.query.filter_by(id=book_id).first()
+    publisher_name = Publisher.query.filter_by(id=publisher_id).first().name
+    return {
+        "user_edition_id": user_edition.id,
+        "title": book.name,
+        "publisher_name": publisher_name,
+        "language": language,
+        "date": book_edition.release_date,
+        "user_rating": user_rating,
+        "user_review": user_review,
+        "user_bookmark": bookmark,
+        "user_status": status,
+        "book_rating": book_edition.rating,
+        "cover": get_presigned_url(f"covers/{book_edition.cover_path}")
+    }

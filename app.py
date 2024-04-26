@@ -6,7 +6,7 @@ from models import db
 from views import (AuthAdminIndexView, account_view, activate_admin_views,
                    search_and_add_view, after_registration_view, index_view,
                    login_view, logout_view, register_view, show_books_view,
-                   top_books_view, stats_view)
+                   top_books_view, stats_view, detailed_page_view, add_book_account_view)
 
 # configure app
 app = Flask(__name__)
@@ -70,6 +70,11 @@ def search_and_add():
 @app.route('/stats')
 def stats():
     return stats_view()
+
+
+@app.route('/detailed_description', methods=['POST'])
+def detailed_page():
+    add_book_account_view(request, db)
 
 
 fill_s3_if_not_filled()

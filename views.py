@@ -10,7 +10,7 @@ from wtforms import StringField, SubmitField
 from models import (Author, BookBase, BookBaseGenre, BookEdition,
                     BookPublisher, BooksAuthor, Genre, Language, Publisher,
                     Review, User, UserDescription, UserEdition, book_details,
-                    get_user_books, most_rating_editions, get_stats)
+                    get_user_books, most_rating_editions, get_stats, get_edition_info, Status)
 from bookmust.utils.s3 import get_presigned_url
 
 class AuthAdminIndexView(AdminIndexView):
@@ -152,7 +152,7 @@ def search_and_add_view(request, db):
 
     elif 'edition_id' in request.form:
         # Добавление книги в коллекцию
-        message = add_to_collection(request.form['edition_id'], db)
+        return add_to_collection(request.form['edition_id'], db)
 
     return render_template('search.html', form=form, results=results, message=message, text=text)
 
@@ -194,6 +194,20 @@ def add_to_collection(edition_id, db):
         new_entry = UserEdition(user_id=user_id, edition_id=edition_id)
         db.session.add(new_entry)
         db.session.commit()
-        return "Добавлено в коллекцию, беги скорее проверяй свой личный кабинет!"
+        return detailed_page_view(new_entry)
     else:
-        return "Эта книга уже есть у тебя в коллекции!"
+        message = "Эта книга уже есть у тебя в коллекции!"
+        return render_template('search.html', form=SearchForm(), results=None, message=message, text=None)
+
+
+def detailed_page_view(user_edition):
+    book_info = get_edition_info(user_edition, review_flag=False)
+    book_info["description"] = "Это описание книги если что"
+    statuses = Status.query.all()
+    book_info['statuses'] = [status.status for status in statuses]
+
+    return render_template('detailed_page.html', book=book_info)
+
+
+def add_book_account_view(request, db):
+    print(request)
