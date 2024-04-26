@@ -294,19 +294,19 @@ create table user_description(
 );
 INSERT INTO user_description (email, password, join_date, bio, country_id, user_id, icon_url)
 VALUES
-    ('1@1.1', MD5('1'), '2023-01-01', 'Bio for User 1', 1, 1, 'u1_url.png'),
-    ('user2@example.com', MD5('password2'), '2023-02-02', 'Bio for User 2', 2, 2, 'u2_url.png'),
-    ('user3@example.com', MD5('password3'), '2023-03-03', 'Bio for User 3', 3, 3, 'u3_url.png'),
-    ('user4@example.com', MD5('password4'), '2023-04-04', 'Bio for User 4', 4, 4, 'u4_url.png'),
-    ('user5@example.com', MD5('password5'), '2023-05-05', 'Bio for User 5', 5, 5, 'u5_url.png'),
-    ('user6@example.com', MD5('password6'), '2023-06-06', 'Bio for User 6', 6, 6, 'u6_url.png'),
-    ('user7@example.com', MD5('password7'), '2023-07-07', 'Bio for User 7', 7, 7, 'u7_url.png'),
-    ('user8@example.com', MD5('password8'), '2023-08-08', 'Bio for User 8', 1, 8, 'u8_url.png'),
-    ('user9@example.com', MD5('password9'), '2023-09-09', 'Bio for User 9', 2, 9, 'u9_url.png'),
-    ('user10@example.com', MD5('password10'), '2023-10-10', 'Bio for User 10', 3, 10, 'u10_url.png'),
-    ('user11@example.com', MD5('password11'), '2023-11-11', 'Bio for User 11', 4, 11, 'u11_url.png'),
-    ('user12@example.com', MD5('password12'), '2023-12-12', 'Bio for User 12', 5, 12, 'u12_url.png'),
-    ('user13@example.com', MD5('password13'), '2024-01-01', 'Bio for User 13', 6, 13, 'u13_url.png');
+    ('1@1.1', MD5('1'), '2023-01-01', 'Bio for User 1', 1, 1, '1.png'),
+    ('user2@example.com', MD5('password2'), '2023-02-02', 'Bio for User 2', 2, 2, '2.png'),
+    ('user3@example.com', MD5('password3'), '2023-03-03', 'Bio for User 3', 3, 3, '3.png'),
+    ('user4@example.com', MD5('password4'), '2023-04-04', 'Bio for User 4', 4, 4, '4.png'),
+    ('user5@example.com', MD5('password5'), '2023-05-05', 'Bio for User 5', 5, 5, '5.png'),
+    ('user6@example.com', MD5('password6'), '2023-06-06', 'Bio for User 6', 6, 6, '6.png'),
+    ('user7@example.com', MD5('password7'), '2023-07-07', 'Bio for User 7', 7, 7, '7.png'),
+    ('user8@example.com', MD5('password8'), '2023-08-08', 'Bio for User 8', 1, 8, '8.png'),
+    ('user9@example.com', MD5('password9'), '2023-09-09', 'Bio for User 9', 2, 9, '9.png'),
+    ('user10@example.com', MD5('password10'), '2023-10-10', 'Bio for User 10', 3, 10, '10.png'),
+    ('user11@example.com', MD5('password11'), '2023-11-11', 'Bio for User 11', 4, 11, '11.png'),
+    ('user12@example.com', MD5('password12'), '2023-12-12', 'Bio for User 12', 5, 12, '12.png'),
+    ('user13@example.com', MD5('password13'), '2024-01-01', 'Bio for User 13', 6, 13, '13.png');
 
 
 create table bookmarks(

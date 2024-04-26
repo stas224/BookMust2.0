@@ -50,3 +50,10 @@ def fill_s3_if_not_filled():
         with BytesIO(b"file content") as b:
             s3.upload_fileobj(b, bucket_name, f"books/{cover.replace('.png', '.txt')}")
     print("covers and books ok")
+
+    icons_dir = os.path.join(media_dir, "icons")
+    for icon in os.listdir(icons_dir):
+        s3 = get_s3()
+        icon_path = os.path.join(icons_dir, icon)
+        s3.upload_file(icon_path, bucket_name, f"icons/{icon}")
+    print("icons ok")
