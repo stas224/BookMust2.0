@@ -31,7 +31,7 @@ localstack start --host
 
 
 ### book-details:
-![book-details.png](media/book-details.png)
+![book-details.jpg](media/book-details.jpg)
 
 ### top-editions:
-![top-editions.png](media/top-editions.png)
+![top-editions.jpg](media/top-editions.jpg)

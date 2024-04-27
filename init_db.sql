@@ -230,33 +230,33 @@ create table reviews(
     rating decimal
 );
 
-CREATE OR REPLACE FUNCTION update_book_edition_rating()
-RETURNS TRIGGER AS $$
-DECLARE
-    new_average DECIMAL;
-BEGIN
-    SELECT AVG(rating) INTO new_average
-    FROM reviews
-    JOIN user_edition ON user_edition.id = reviews.user_edition_id
-    WHERE user_edition.edition_id = (
-        SELECT edition_id
-        FROM user_edition
-        WHERE id = NEW.user_edition_id
-    );
+                        CREATE OR REPLACE FUNCTION update_book_edition_rating()
+                        RETURNS TRIGGER AS $$
+                        DECLARE
+                            new_average DECIMAL;
+                        BEGIN
+                            SELECT AVG(rating) INTO new_average
+                            FROM reviews
+                            JOIN user_edition ON user_edition.id = reviews.user_edition_id
+                            WHERE user_edition.edition_id = (
+                                SELECT edition_id
+                                FROM user_edition
+                                WHERE id = NEW.user_edition_id
+                            );
 
-    IF new_average IS NOT NULL THEN
-        UPDATE book_edition
-        SET rating = new_average
-        WHERE id = (
-            SELECT edition_id
-            FROM user_edition
-            WHERE id = NEW.user_edition_id
-        );
-    END IF;
+                            IF new_average IS NOT NULL THEN
+                                UPDATE book_edition
+                                SET rating = new_average
+                                WHERE id = (
+                                    SELECT edition_id
+                                    FROM user_edition
+                                    WHERE id = NEW.user_edition_id
+                                );
+                            END IF;
 
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+                            RETURN NEW;
+                        END;
+                        $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_update_book_rating
 AFTER INSERT ON reviews
