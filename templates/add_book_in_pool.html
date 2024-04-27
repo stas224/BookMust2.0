@@ -6,11 +6,11 @@
         <form action="/pool-add-book" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="image" class="form-label">Обложка:</label>
-                <input type="file" class="form-control" id="image" name="image">
+                <input type="file" class="form-control" id="image" name="image" required>
             </div>
             <div class="mb-3">
                 <label for="isbn" class="form-label">ISBN:</label>
-                <input type="text" class="form-control" id="isbn" name="isbn">
+                <input type="text" class="form-control" id="isbn" name="isbn" required>
             </div>
             <div class="mb-3">
                 <label for="title" class="form-label">Название:</label>
@@ -18,41 +18,41 @@
             </div>
             <div class="mb-3">
                 <label for="author" class="form-label">Автор:</label>
-                <select class="form-select" id="author" name="author">
+                <select class="form-select" id="author" name="author" required>
                     {% for author in authors %}
-                        <option value='{{ author }}'>{{ author }}</option>
+                        <option value="{{ author }}">{{ author }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="mb-3">
                 <label for="genre" class="form-label">Жанр:</label>
-                <select class="form-select" id="genre" name="genre">
+                <select class="form-select" id="genre" name="genre" required>
                     {% for genre in genres %}
-                        <option value='{{ genre }}'>{{ genre }}</option>
+                        <option value="{{ genre }}">{{ genre }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="mb-3">
                 <label for="publisher" class="form-label">Издатель:</label>
-                <select class="form-select" id="publisher" name="publisher">
+                <select class="form-select" id="publisher" name="publisher" required>
                     {% for publisher in publishers %}
-                        <option value='{{ publisher }}'>{{ publisher }}</option>
+                        <option value="{{ publisher }}">{{ publisher }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="mb-3">
-                <label for="release_date" class="form-label">Дата напиания:</label>
-                <input type="date" class="form-control" id="release_date" name="release_date">
+                <label for="release_date" class="form-label">Дата релиза:</label>
+                <input type="date" class="form-control" id="release_date" name="release_date" required>
             </div>
             <div class="mb-3">
                 <label for="publish_date" class="form-label">Дата выхода:</label>
-                <input type="date" class="form-control" id="publish_date" name="publish_date">
+                <input type="date" class="form-control" id="publish_date" name="publish_date" required>
             </div>
             <div class="mb-3">
                 <label for="language" class="form-label">Язык:</label>
-                <select class="form-select" id="language" name="language">
+                <select class="form-select" id="language" name="language" required>
                     {% for language in languages %}
-                        <option value='{{ language }}'>{{ language }}</option>
+                        <option value="{{ language }}">{{ language }}</option>
                     {% endfor %}
                 </select>
             </div>

@@ -106,7 +106,7 @@ def register_view(request, db):
 
     exist = UserDescription.query.filter_by(email=email).all()
     if exist:
-        return 'Такой уже есть, ссоре'
+        return render_template('bad_register.html')
     new_user = User(first_name=first_name, last_name=last_name)
     db.session.add(new_user)
     db.session.commit()
