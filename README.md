@@ -9,29 +9,12 @@ pip install -r requirements.txt
 /usr/bin/bash ./redis_init.sh
 localstack start --host
 ```
-## todo-list:
-- [x] Придумать тему 
-- [x] Организовать отношения в реляционной базе данных
-- [x] личный кабинет
-- [x] авторизация
-- [x] поиск
-- [x] s3 connector
-- [x] key-value
-
-- [x] логика добавления книги в коллекцию пользователя
-- [x] логика изменения статусов книги в коллекции пользователя
-- [x] логика удаления книги из коллекции пользователя
-- [x] логика добавления книги в пул
-- [x] логика удаления книги из пула
-
-- [X] Статистика
 
 ## sql-schema:
 ![sql-schema.jpg](media/sql-schema.jpg)
 
-
-### book-details:
-![book-details.jpg](media/book-details.jpg)
-
-### top-editions:
+## index page:
 ![top-editions.jpg](media/top-editions.jpg)
+
+## collection page:
+![book-details.jpg](media/book-details.jpg)
